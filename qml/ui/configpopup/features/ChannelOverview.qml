@@ -41,12 +41,16 @@ Item {
     readonly property int keyboardAction: actions.length
     readonly property var keyboardOptions: Ranges.keyboardOptions()
     readonly property var keyboardProfiles: Ranges.keyboardProfiles(settings.rc_keyboard_mappings)
-    readonly property string defaultKeyboardRanges: "1500:0,2100:0"
+    readonly property string defaultKeyboardRanges: "1400:0,1600:0,2100:0"
     property var fcValues: []
     readonly property var fc: typeof _rcchannelsmodelfc !== "undefined" ? _rcchannelsmodelfc : null
     readonly property var airLink: typeof _ohdSystemAir !== "undefined" ? _ohdSystemAir : null
     height: overview.implicitHeight
-    onVisibleChanged: if (!visible) editor.close()
+    onVisibleChanged: {
+        if (visible) refreshChannelValues()
+        else editor.close()
+    }
+    onFcChanged: refreshChannelValues()
 
     function supported(action) {
         controller.airRevision
@@ -94,9 +98,15 @@ Item {
         editor.savedChanges = false
         editor.open()
     }
-    Timer {
-        interval: 100; running: root.visible; repeat: true; triggeredOnStart: true
-        onTriggered: root.fcValues = root.fc && root.fc.is_alive && typeof root.fc.channelValues === "function" ? root.fc.channelValues() : []
+    function refreshChannelValues() {
+        fcValues = fc && fc.is_alive && typeof fc.channelValues === "function" ? fc.channelValues() : []
+    }
+    Component.onCompleted: refreshChannelValues()
+    Connections {
+        target: root.fc
+        enabled: root.visible
+        function onChannelsUpdated() { root.refreshChannelValues() }
+        function onIs_aliveChanged() { root.refreshChannelValues() }
     }
     Timer {
         interval: 1500
@@ -320,6 +330,14 @@ Item {
                             color: settings_form.secondaryText
                             font.pixelSize: Typography.helper
                             text: visible ? root.radioAvailabilityMessage() : ""
+                        }
+                        Label {
+                            visible: editor.selectedAction === root.keyboardAction
+                            width: parent.width
+                            wrapMode: Text.WordWrap
+                            text: qsTr("For a centered knob, assign a direction to each outer range and leave the middle on No key. Return to the middle before the next press.")
+                            color: settings_form.secondaryText
+                            font.pixelSize: Typography.helper
                         }
                         ChannelRangeEditor {
                             visible: editor.selectedAction === root.keyboardAction

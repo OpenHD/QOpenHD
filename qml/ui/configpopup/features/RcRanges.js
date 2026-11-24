@@ -106,6 +106,29 @@ function keyboardOptions() {
     ]
 }
 
+function isCenteredKeyboardProfile(ranges) {
+    return ranges.length === 3 && ranges[1].value === 0
+        && ranges[0].value !== 0 && ranges[2].value !== 0
+        && ranges[0].value !== ranges[2].value
+}
+
+function addKeyboardNeutralRange(ranges) {
+    if (ranges.length !== 2) return ranges
+    var low = ranges[0].value, high = ranges[1].value
+    var horizontal = (low === Qt.Key_Left && high === Qt.Key_Right)
+        || (low === Qt.Key_Right && high === Qt.Key_Left)
+    var vertical = (low === Qt.Key_Up && high === Qt.Key_Down)
+        || (low === Qt.Key_Down && high === Qt.Key_Up)
+    if (!horizontal && !vertical) return ranges
+
+    var split = ranges[0].upper
+    return [
+        {upper: Math.max(900, split - 100), value: low},
+        {upper: Math.min(2099, split + 100), value: 0},
+        {upper: 2100, value: high}
+    ]
+}
+
 function keyboardProfiles(text) {
     var profiles = {}
     try {
@@ -116,7 +139,7 @@ function keyboardProfiles(text) {
             if (typeof saved[channel] !== "string") continue
             var ranges = parse(saved[channel])
             if (valid(ranges, keys) && ranges.some(function(range) { return range.value !== 0 }))
-                profiles[channel] = ranges
+                profiles[channel] = addKeyboardNeutralRange(ranges)
         }
     } catch (error) {
         return {}

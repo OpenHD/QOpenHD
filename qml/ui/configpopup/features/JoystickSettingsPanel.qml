@@ -101,6 +101,21 @@ Flickable {
  }
  Column {
      id:cards;width:root.width;spacing:12
+     Switch {
+         objectName: "fastRcUpdates"
+         visible: settings_form.showAdvancedSettings
+         enabled: settings.set_mavlink_message_rates
+         width: parent.width
+         text: qsTr("Faster RC telemetry")
+         font.family: Typography.family
+         font.pixelSize: Typography.body
+         checked: settings.mavlink_message_rates_high_speed_rc_channels
+         onToggled: {
+             settings.mavlink_message_rates_high_speed_rc_channels = checked
+             settings.setValue("mavlink_message_rates_high_speed_rc_channels", checked)
+             _mavlinkTelemetry.re_apply_rates()
+         }
+     }
      ChannelOverview {
          objectName: "joystickChannelOverview"
          width: parent.width

@@ -54,16 +54,19 @@ Item {
             const pwm = channels[channel - 1]
             if (!(pwm >= 900 && pwm <= 2100)) return
             const ranges = profiles[channel]
+            const centered = Ranges.isCenteredKeyboardProfile(ranges)
             const before = previousAreas[channel]
             var area = ranges.findIndex(function(range) { return pwm <= range.upper })
             if (before !== undefined && ranges[before].value !== 0) {
                 // Require a short move past a keyed range before re-arming it.
                 const low = before === 0 ? 900 : ranges[before - 1].upper + 1
-                if (pwm >= low - 6 && pwm <= ranges[before].upper + 6) area = before
+                const margin = centered ? Math.min(6, Math.floor((ranges[1].upper - ranges[0].upper - 1) / 2)) : 6
+                if (pwm >= low - margin && pwm <= ranges[before].upper + margin) area = before
             }
             next[channel] = area
             const key = ranges[area].value
-            if (before !== undefined && key !== 0 && key !== ranges[before].value && pressed.indexOf(key) < 0)
+            const ready = before !== undefined && (centered ? before === 1 : key !== ranges[before].value)
+            if (ready && key !== 0 && pressed.indexOf(key) < 0)
                 pressed.push(key)
         })
         previousAreas = next

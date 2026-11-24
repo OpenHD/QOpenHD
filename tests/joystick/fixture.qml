@@ -34,7 +34,21 @@ Item {
  QtObject {id:settings_form;property bool darkMode:true;property bool showAdvancedSettings:true;property bool compactSidebar:true;property color pageBackground:"#091827";property int backCalls:0;function side_bar_regain_focus(){backCalls++} property color primaryText:"white";property color secondaryText:"#aebdcb";property color accentColor:"#278cff";property color panelBackground:"#102235";property color panelBackgroundRaised:"#15283b";property color lineColor:"#26394c"}
  ListModel {id:_rcchannelsmodelfc;property bool is_alive:true;signal channelsUpdated();function channelValues(){var a=[];for(var i=0;i<18;i++)a.push(i<count?get(i).curr_value:1500);return a} ListElement {curr_value:1200} ListElement {curr_value:1800} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500}}
  QtObject {id:_fcMavlinkSystem;property bool armed:false}
- QtObject {id:settings; property string rc_keyboard_mappings: "{}"}
+ QtObject {
+     id: settings
+     property string rc_keyboard_mappings: "{}"
+     property bool set_mavlink_message_rates: true
+     property bool mavlink_message_rates_high_speed_rc_channels: false
+     property var savedRcRate: undefined
+     function setValue(key, value) {
+         if (key === "mavlink_message_rates_high_speed_rc_channels") savedRcRate = value
+     }
+ }
+ QtObject {
+     id: _mavlinkTelemetry
+     property var requestedRcRate: undefined
+     function re_apply_rates() { requestedRcRate = settings.savedRcRate }
+ }
  QtObject {id:hudOverlayGrid; property QtObject rcKeyboardEditor: null}
  Pages.RcKeyboardNavigation {
      id: keyboard
@@ -265,6 +279,7 @@ Item {
          var previousX=marker.x
          verify(segment.activeRange)
          _rcchannelsmodelfc.setProperty(2,"curr_value",1800)
+         _rcchannelsmodelfc.channelsUpdated()
          tryCompare(segment,"activeRange",false)
          verify(findChild(editor.contentItem,"channelRange0_1").activeRange)
          verify(marker.x>previousX)
@@ -319,10 +334,14 @@ Item {
          editor.apply()
          verify(editor.opened)
          verify(editor.error.indexOf("direction") >= 0)
-         setAreaValue(editor, keyboardOption.actionIndex, 1, Qt.Key_Right)
+         compare(Ranges.encode(editor.keyboardRanges), "1400:0,1600:0,2100:0")
+         setAreaValue(editor, keyboardOption.actionIndex, 0, Qt.Key_Left)
+         setAreaValue(editor, keyboardOption.actionIndex, 2, Qt.Key_Right)
          editor.apply()
          tryCompare(editor, "opened", false)
-         compare(Ranges.keyboardProfiles(settings.rc_keyboard_mappings)[6][1].value, Qt.Key_Right)
+         compare(Ranges.keyboardProfiles(settings.rc_keyboard_mappings)[6][0].value, Qt.Key_Left)
+         compare(Ranges.keyboardProfiles(settings.rc_keyboard_mappings)[6][1].value, 0)
+         compare(Ranges.keyboardProfiles(settings.rc_keyboard_mappings)[6][2].value, Qt.Key_Right)
          compare(air.assignments.FHSS_VIA_RC, 6)
          compare(air.writes.length, 0)
 
@@ -342,6 +361,7 @@ Item {
          var picker = findChild(editor.contentItem, "channelFunctionPicker")
          var keyboardOption = picker.model.find(function(option) { return option.text === "Keyboard" })
          chooseFunction(editor, keyboardOption.actionIndex)
+         editor.keyboardRanges = Ranges.parse("1500:0,2100:0")
          setAreaValue(editor, keyboardOption.actionIndex, 1, Qt.Key_Down)
          editor.apply()
          tryCompare(editor, "opened", false)
@@ -378,6 +398,44 @@ Item {
          sample(1000)
          sample(1800)
          compare(keys.count, 2)
+     }
+     function test_centered_knobs_rearm_independently() {
+         var saved = {}
+         saved[3] = "1500:" + Qt.Key_Left + ",2100:" + Qt.Key_Right
+         saved[4] = "1400:" + Qt.Key_Down + ",1600:0,2100:" + Qt.Key_Up
+         settings.rc_keyboard_mappings = JSON.stringify(saved)
+         var migrated = Ranges.keyboardProfiles(settings.rc_keyboard_mappings)[3]
+         compare(Ranges.encode(migrated), "1400:" + Qt.Key_Left + ",1600:0,2100:" + Qt.Key_Right)
+
+         function sample(horizontal, vertical) {
+             _rcchannelsmodelfc.setProperty(2, "curr_value", horizontal)
+             _rcchannelsmodelfc.setProperty(3, "curr_value", vertical)
+             _rcchannelsmodelfc.channelsUpdated()
+         }
+         sample(1000, 1500)
+         compare(keys.count, 0)
+         sample(1500, 1500)
+         sample(1000, 2000)
+         compare(keys.count, 2)
+         sample(1000, 2000)
+         sample(1403, 2000)
+         sample(1000, 2000)
+         sample(2000, 2000)
+         compare(keys.count, 2)
+         for (var press = 0; press < 2; ++press) {
+             sample(1500, 2000)
+             sample(1000, 2000)
+         }
+         compare(keys.count, 4)
+         sample(1500, 1500)
+         sample(2000, 1000)
+         compare(keys.count, 6)
+         _rcchannelsmodelfc.is_alive = false
+         _rcchannelsmodelfc.is_alive = true
+         sample(2000, 1000)
+         compare(keys.count, 6)
+         compare(keys.signalArguments.map(function(args) { return args[0] }),
+                 [Qt.Key_Left, Qt.Key_Up, Qt.Key_Left, Qt.Key_Left, Qt.Key_Right, Qt.Key_Down])
      }
      function setAreaValue(editor, action, area, value) {
          findChild(editor.contentItem,"channelRangeEditor"+action).selectedArea=area
@@ -546,9 +604,11 @@ Item {
          var editor=openEditor(3)
          editor.editRanges(0,Ranges.parse("1300:40,1700:10,2100:20"))
          _rcchannelsmodelfc.setProperty(2,"curr_value",1300)
+         _rcchannelsmodelfc.channelsUpdated()
          tryCompare(findChild(editor.contentItem,"channelRange0_0"),"activeRange",true)
          verify(!findChild(editor.contentItem,"channelRange0_1").activeRange)
          _rcchannelsmodelfc.setProperty(2,"curr_value",1301)
+         _rcchannelsmodelfc.channelsUpdated()
          tryCompare(findChild(editor.contentItem,"channelRange0_1"),"activeRange",true)
          verify(!findChild(editor.contentItem,"channelRange0_0").activeRange)
          _fcMavlinkSystem.armed=true
@@ -640,7 +700,22 @@ Item {
          var overview=findChild(loader.item,"joystickChannelOverview")
          verify(findChild(loader.item,"joystickControls").y>overview.y+overview.height)
          _rcchannelsmodelfc.setProperty(1,"curr_value",1900)
-         tryCompare(findChild(loader.item,"joystickChannel2"),"value",1900)
+         _rcchannelsmodelfc.channelsUpdated()
+         compare(findChild(loader.item,"joystickChannel2").value,1900)
+     }
+     function test_fast_rc_telemetry_requests_persisted_rate() {
+         var toggle = findChild(loader.item, "fastRcUpdates")
+         verify(toggle.visible)
+         compare(toggle.checked, false)
+         mouseClick(toggle)
+         compare(settings.mavlink_message_rates_high_speed_rc_channels, true)
+         compare(_mavlinkTelemetry.requestedRcRate, true)
+         mouseClick(toggle)
+         compare(settings.mavlink_message_rates_high_speed_rc_channels, false)
+         compare(_mavlinkTelemetry.requestedRcRate, false)
+         settings.set_mavlink_message_rates = false
+         verify(!toggle.enabled)
+         settings.set_mavlink_message_rates = true
      }
      function test_normal_settings_show_only_channel_cards(){
          settings_form.showAdvancedSettings=false;wait(30)
