@@ -7,7 +7,9 @@ Item {
     property int inspectedPin: 0
     property real alignedScale: 0
     readonly property bool fullSizePi: ["pi3", "pi4", "pi5"].indexOf(board.art) >= 0
-    readonly property int drawingHeight: fullSizePi ? 478 : board.art === "a7s" ? 365 : 426
+    readonly property real headerHousingBottom: headerStart + headerPitch * (Math.ceil(board.pins.length / 2) - 1) + 12
+    readonly property real piConnectorTop: headerHousingBottom + 45
+    readonly property int drawingHeight: fullSizePi ? piConnectorTop + 78 : board.art === "a7s" ? 365 : 426
     readonly property real drawingScale: alignedScale > 0 ? alignedScale : Math.min(width / 298, height / drawingHeight)
     readonly property real canvasTop: alignedScale > 0 ? 8 : (height - drawingScale * drawingHeight) / 2
     readonly property real headerStart: fullSizePi ? 76 : 66
@@ -85,18 +87,21 @@ Item {
                     gradient.addColorStop(i / (colors.length - 1), colors[i])
                 return gradient
             }
-            function metal(x, y, w, h, socket) {
+            function metal(x, y, w, h, socket, matte) {
                 box(x + 3, y + 5, w, h, 6, "#19283c", ink, 5)
-                box(x, y, w, h, 6, finish(x, y, w, h, ["#ecf9ff", "#aebfd5", "#566881"]), ink, 5)
-                line([x + 5, y + h - 7, x + 5, y + 6, x + w - 9, y + 6], "#f6fdff", 2.5)
+                var colors = matte ? ["#b5c1c3", "#85969f", "#586b78"]
+                                   : ["#ecf9ff", "#aebfd5", "#566881"]
+                box(x, y, w, h, 6, finish(x, y, w, h, colors), ink, 5)
+                line([x + 5, y + h - 7, x + 5, y + 6, x + w - 9, y + 6], matte ? "#c6d2d6" : "#f6fdff", 2.5)
                 if (socket)
                     box(x + Math.round(w * 0.56), y + 9, Math.round(w * 0.28), h - 18, 3, socket, ink, 3)
             }
             function ribbonSocket(x, y, w) {
-                box(x, y, w, 13, 3, "#e5dfc7", ink, 3)
-                box(x + 4, y + 3, w - 8, 4, 1, "#384856", ink, 1)
-                for (var contact = x + 8; contact < x + w - 6; contact += 4)
-                    line([contact, y + 8, contact, y + 10], "#b28f59", 1)
+                box(x, y, w, 14, 3, "#26363a", ink, 3)
+                box(x + 3, y + 2, w - 6, 4, 1, "#58685f", "#111d25", 1)
+                line([x + 5, y + 9, x + w - 5, y + 9], "#0d1922", 2)
+                for (var contact = x + 6; contact <= x + w - 6; contact += 3)
+                    line([contact, y + 9, contact, y + 12], "#c5a271", 1.3)
             }
             function chip(x, y, w, h, name, brand, steel) {
                 for (var i = 0; i < 8; ++i) {
@@ -117,6 +122,7 @@ Item {
             var art = board.art
             var pixelBoard = art === "pc"
             var schematic = board.pins.length === 0
+            var pi4 = art === "pi4"
             var pi5 = art === "pi5"
             var leftHeader = ["zero", "rock5a", "a7s"].indexOf(art) >= 0
             var narrow = ["zero", "pi-zero", "a7z"].indexOf(art) >= 0
@@ -125,7 +131,7 @@ Item {
             var y0 = narrow ? 21 : 31
             var y1 = narrow ? 402 : 378
             if (art === "a7s") y1 = 326
-            if (root.fullSizePi) y1 = 431
+            if (root.fullSizePi) y1 = root.piConnectorTop + 23
             if (schematic) {
                 x0 = art === "pico" ? 73 : 30
                 x1 = art === "pico" ? 225 : 268
@@ -150,7 +156,7 @@ Item {
                 dot(sx, sy, 2, "#c3ac6c", ink, 0.8)
             }
 
-            var lowerHoleY = root.fullSizePi ? 393 : y1 - 20
+            var lowerHoleY = root.fullSizePi ? root.piConnectorTop - 22 : y1 - 20
             var holes = [[x0 + 19,y0 + 20], [x1 - 19,y0 + 20],
                          [x0 + 19,lowerHoleY], [x1 - 19,lowerHoleY]]
             for (var h = 0; h < holes.length; ++h) {
@@ -159,7 +165,7 @@ Item {
                 dot(hole[0], hole[1], 5.5, "#071722", "#aa7a3c", 2)
             }
 
-            for (var j = 0; j < 24; ++j) {
+            for (var j = 0; j < (pi4 ? 0 : 24); ++j) {
                 var dx = x0 + 48 + (j * 31) % (x1 - x0 - 80)
                 var dy = y0 + 47 + (j * 41) % (y1 - y0 - 90)
                 box(dx, dy, 12, 7, 1, j % 3 ? "#e7bb62" : "#253a49", ink, 2)
@@ -231,14 +237,16 @@ Item {
                 }
                 chip(91, 144, 116, 85, board.chip || board.brand, board.chip ? board.brand : "", true)
             } else {
-                metal(11, 73, 37, 36, "#354457")
-                metal(13, 123, 35, 30, "#304050")
-                if (art !== "pi3") metal(13, 163, 35, 30, "#304050")
-                if (!pi5) metal(11, 255, 43, 36, "#151b22")
-                var pi4 = art === "pi4"
-                metal(50, pi4 ? 414 : 409, pi4 ? 56 : 61, pi4 ? 54 : 60, pi4 ? "#292c3a" : "#bd944e")
-                metal(117, 414, 53, 54, art === "pi3" ? "#292c3a" : "#1c7bba")
-                metal(183, pi4 ? 409 : 414, pi4 ? 63 : 53, pi4 ? 60 : 54, pi4 ? "#bd944e" : "#292c3a")
+                metal(11, 73, 37, 36, "#354457", pi4)
+                metal(13, 123, 35, 30, "#304050", pi4)
+                if (art !== "pi3") metal(13, 163, 35, 30, "#304050", pi4)
+                if (!pi5) metal(11, 255, 43, 36, "#151b22", pi4)
+                var portsTop = root.piConnectorTop
+                metal(50, portsTop + (pi4 ? 5 : 0), pi4 ? 56 : 61, pi4 ? 54 : 60,
+                      pi4 ? "#292c3a" : "#bd944e", pi4)
+                metal(122, portsTop + 5, 49, 54, art === "pi3" ? "#292c3a" : "#1c7bba", pi4)
+                metal(187, portsTop + (pi4 ? 0 : 5), pi4 ? 64 : 53, pi4 ? 60 : 54,
+                      pi4 ? "#8b704c" : "#292c3a", pi4)
                 chip(93, 107, 93, 76, board.chip, board.brand, true)
                 chip(pi5 ? 93 : 121, 207, 63, 43, pi5 ? "RP1" : pi4 ? "LPDDR4" : "RAM", "", false)
                 if (pi5) {
@@ -246,8 +254,8 @@ Item {
                     box(59, 243, 15, 29, 3, "#e9e9d7", ink, 3)
                     box(181, 69, 22, 10, 2, "#f1eddf", ink, 3)
                 } else {
-                    ribbonSocket(45, 230, 65)
-                    ribbonSocket(102, 45, 76)
+                    ribbonSocket(43, 229, 65)
+                    ribbonSocket(96, 47, 77)
                     chip(84, 268, 47, 35, pi4 ? "VL805" : "USB", "", false)
                     chip(155, 279, 43, 30, "LAN", "", false)
                 }
@@ -257,7 +265,7 @@ Item {
             var headerX = leftHeader ? (narrow ? 69 : 36) : (narrow ? 198 : 218)
             var headerY = root.headerStart
             var pitch = root.headerPitch
-            box(headerX - 9, headerY - 10, 34, pitch * (board.pins.length / 2 - 1) + 20, 5, "#102436", ink, 4)
+            box(headerX - 9, headerY - 10, 34, root.headerHousingBottom - headerY + 8, 5, "#102436", ink, 4)
             for (var pin = 1; pin <= board.pins.length; ++pin) {
                 var assignment = root.highlights[pin]
                 var leftColumn = pin % 2 === 1
