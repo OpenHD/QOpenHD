@@ -54,6 +54,6 @@ var boards = {
     "xavier": {"w": 49, "h": 40, "pcb": null, "header": null, "aux": null},
     "xavier-agx": {"w": 105, "h": 92, "pcb": [2, 2, 100, 87], "header": null, "aux": null},
     "xavier-nx": {"w": 75, "h": 51, "pcb": [2, 2, 69.6, 45], "header": null, "aux": null},
-    "zero": {"w": 37, "h": 70, "pcb": [2, 2, 30, 65], "header": {"x": 4.9, "y": 10.5, "rows": 20, "pitch": 2.54, "columns": 2, "columnGap": 2.54, "order": "odd-left"}, "aux": null},
+    "zero": {"w": 37, "h": 70, "pcb": [4, 2, 30, 65], "header": {"x": 29.4, "y": 10.32, "rows": 20, "pitch": 2.54, "columns": 2, "columnGap": 2.54, "order": "odd-left"}, "aux": null},
     "zero-e": {"w": 37, "h": 70, "pcb": [2, 2, 30, 65], "header": {"x": 4.9, "y": 10.5, "rows": 20, "pitch": 2.54, "columns": 2, "columnGap": 2.54, "order": "odd-left"}, "aux": null}
 }

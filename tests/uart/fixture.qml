@@ -407,6 +407,25 @@ Item {
              }
          }
      }
+     function test_zero_3w_header_matches_top_side_drawing(){
+         _ohdSystemAir.ohd_platform_type=20
+         var board=findChild(loader.item,"portsBoardPinout")
+         var art=findChild(board,"portsBoardArt")
+         tryCompare(art,"imageReady",true)
+         var pin1=art.pointForPin(1,false)
+         var pin2=art.pointForPin(2,false)
+         var pin40=art.pointForPin(40,false)
+         verify(pin1.x > art.pcbBounds.x + art.pcbBounds.width / 2)
+         verify(pin1.x < pin2.x && pin1.y === pin2.y)
+         verify(pin1.y < pin40.y && pin2.x === pin40.x)
+         compare(board.pinAtSlot(0),1)
+         compare(board.pinAtSlot(39),40)
+         var tx=art.pointForPin(8,false)
+         var rx=art.pointForPin(10,false)
+         verify(tx.x === pin2.x && rx.x === pin2.x && tx.y < rx.y)
+         compare(art.hitPin(tx.x,tx.y,art.geometry.header),8)
+         compare(art.hitPin(rx.x,rx.y,art.geometry.header),10)
+     }
      function test_board_art_matches_selected_unit(){
          _ohdSystemAir.ohd_platform_type=20
          _ohdSystemGround.ohd_platform_type=13

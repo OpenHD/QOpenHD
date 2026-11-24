@@ -212,17 +212,29 @@ def rock5(model_b):
     ), mount_holes(56, 85, 3.5, 62), Header(49.9, 7.7, 20))
 
 
-def radxa_zero(wifi=True):
-    # https://docs.radxa.com/en/zero/zero3/hardware-design/hardware-interface
+def radxa_zero_3w():
+    # Top-side mechanical view, with the CON1 pin-1 triangle at the HDMI end.
+    # https://dl.radxa.com/zero3/docs/hw/3w/radxa_zero_3w_product_brief.pdf
+    return Board(30, 65, "radxa", (
+        Part("shield", 8.9, 7.0, 10.5, 9.5, "Wi-Fi"),
+        Part("soc", 7.0, 20.0, 12.3, 12.5, "RK3566", "ROCKCHIP"),
+        Part("chip", 7.7, 37.0, 10.3, 8.5, "LPDDR4"),
+        Part("chip", 9.9, 49.6, 8.5, 7.0, "PMIC"),
+        Part("hdmi", -1.0, 8.75, 8.0, 7.5),
+        Part("usb-c", -1.2, 37.5, 8.5, 8.1),
+        Part("usb-c", -1.2, 50.65, 8.5, 8.1),
+    ), mount_holes(30, 65, 3.6), Header(25.4, 8.32, 20))
+
+
+def radxa_zero_3e():
     return Board(30, 65, "radxa", (
         Part("chip", 11.6, 8.4, 8.5, 7.0, "PMIC"),
         Part("chip", 11.0, 20, 10.3, 8.5, "LPDDR4"),
         Part("soc", 10.7, 32.5, 12.3, 12.5, "RK3566", "ROCKCHIP"),
-        Part("shield", 11.4, 49.7, 10.5, 9.5, "Wi-Fi") if wifi else
         Part("ethernet", 16.2, 47.4, 14.6, 12.2),
         Part("usb-c", 22.7, 9.6, 8.5, 8.1),
         Part("usb-c", 22.7, 21.4, 8.5, 8.1),
-        Part("hdmi", 23.3, 52.2 if wifi else 35.6, 8.0, 7.5),
+        Part("hdmi", 23.3, 35.6, 8.0, 7.5),
     ), mount_holes(30, 65, 3), Header(2.9, 8.5, 20))
 
 
@@ -278,8 +290,8 @@ BOARDS = {
     "pi-cm4": module("BCM2711", "BROADCOM", "pi"),
     "pi-cm4s": module("BCM2711", "BROADCOM", "pi", 67.6, 30, True),
     "pi-cm5": module("BCM2712", "BROADCOM", "pi"),
-    "zero": radxa_zero(),
-    "zero-e": radxa_zero(False),
+    "zero": radxa_zero_3w(),
+    "zero-e": radxa_zero_3e(),
     "rock3": rock3(),
     "rock3b": rock3(carrier_b=True),
     "rock3c": rock3(compact=True),
