@@ -179,9 +179,10 @@ Item {
                 metal(43, 258, 43, 38, "#355a7a")
                 metal(43, 318, 43, 38, "#6b481d")
                 chip(107, 137, 85, 82, board.chip, board.brand, cubie)
-                chip(105, 233, 82, 37, cubie ? "LPDDR5" : "RAM", "", false)
+                chip(105, 233, 82, 37, cubie ? "LPDDR4X" : "RAM", "", false)
                 metal(114, cubie ? 62 : 333, 56, 39, "")
                 text(cubie ? "Wi-Fi" : "microSD", 142, cubie ? 86 : 356, 10, "#24364b")
+                if (cubie) chip(122, 308, 61, 55, "AXP318W", "PMIC", false)
             } else if (art === "rock5a" || art === "rock5b" || art === "rock3" || art === "rock3c") {
                 var rock5 = art === "rock5a" || art === "rock5b"
                 var ioX = leftHeader ? 198 : 10
