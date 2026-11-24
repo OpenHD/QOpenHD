@@ -69,6 +69,12 @@ Item {
         controller.airRevision
         return !!(supported(action) && action.rangeId && controller.airParams.param_string_exists(action.rangeId))
     }
+    readonly property int radioMaxAreas: {
+        if (!controller || !controller.airParams) return 5
+        controller.airRevision
+        if (!controller.airParams.param_int_exists("RC_RANGE_MAX")) return 5
+        return Math.max(5, Math.min(Ranges.maxAreas, controller.airParams.get_cached_int("RC_RANGE_MAX")))
+    }
     function rangeString(action) {
         controller.airRevision
         if (rangesSupported(action)) return controller.airParams.get_cached_string(action.rangeId)
@@ -239,7 +245,10 @@ Item {
             for (var check=0; check<root.actions.length; ++check) {
                 if (!selected[check]) continue
                 var checkedAction = root.actions[check]
-                if (!Ranges.valid(ranges[check], checkedAction.values)) { error = qsTr("Invalid areas. Use increasing PWM boundaries covering 900–2100 µs."); return }
+                if (ranges[check].length > root.radioMaxAreas || !Ranges.valid(ranges[check], checkedAction.values)) {
+                    error = qsTr("Invalid areas. Use at most %1 increasing PWM ranges covering 900–2100 µs.").arg(root.radioMaxAreas)
+                    return
+                }
                 if (Ranges.encode(ranges[check]) !== originalRanges[check] && !root.rangesSupported(checkedAction)) { error = qsTr("Update the Air firmware to customize ranges."); return }
             }
             var writes = []
@@ -438,12 +447,22 @@ Item {
                                         width: parent.width
                                         actionIndex: actionSection.actionIndex
                                         mcsLevels: actionSection.action.id === "MCS_VIA_RC"
+                                        maxAreas: root.radioMaxAreas
                                         ranges: editor.ranges[actionIndex] || []
                                         options: actionSection.action.values.map(function(value, i) { return {text: actionSection.action.labels[i], value: value} })
                                         editable: root.rangesSupported(actionSection.action) && !controller.armed
                                         live: root.pwm(editor.channel)
                                         onEdited: function(next) { editor.editRanges(actionIndex, next) }
                                         onResetRequested: editor.editRanges(actionIndex, Ranges.parse(actionSection.action.defaults))
+                                    }
+                                    Label {
+                                        visible: (actionSection.action.id === "BW_VIA_RC" || actionSection.action.id === "MCS_VIA_RC")
+                                                 && root.rangesSupported(actionSection.action)
+                                        width: parent.width
+                                        wrapMode: Text.WordWrap
+                                        color: settings_form.secondaryText
+                                        font.pixelSize: Typography.helper
+                                        text: qsTr("Saved on the Air unit. A compatible WiFiBroadcast radio uses this mapping when RC channel data is available.")
                                     }
                                     Label {
                                         visible: root.supported(actionSection.action) && !root.rangesSupported(actionSection.action)

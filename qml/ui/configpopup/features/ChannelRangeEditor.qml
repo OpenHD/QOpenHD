@@ -44,6 +44,7 @@ Column {
     property int selectedArea: 0
     property int addedAreaValue: -1
     property bool mcsLevels: false
+    property int maxAreas: Ranges.maxAreas
     signal edited(var next)
     signal resetRequested()
     spacing: 12
@@ -239,9 +240,9 @@ Column {
         Flow {
             width: parent.width; spacing: 8
             AdvancedActionButton {
-                objectName: "rangeAdd" + root.actionIndex; text: root.mcsLevels ? qsTr("+ Add MCS Level") : qsTr("+ Area")
-                enabled: root.mcsLevels ? Ranges.nextMcsLevel(root.ranges) >= 0
-                    : root.ranges.length < 5 && root.ranges.length > 0 && root.ranges[root.selectedArea].upper > (root.selectedArea === 0 ? 900 : root.ranges[root.selectedArea-1].upper+1)
+                objectName: "rangeAdd" + root.actionIndex; text: qsTr("+ Area")
+                enabled: root.ranges.length > 0 && root.ranges.length < root.maxAreas
+                    && (root.mcsLevels || root.ranges[root.selectedArea].upper > (root.selectedArea === 0 ? 900 : root.ranges[root.selectedArea-1].upper+1))
                 onClicked: {
                     if (!enabled || !root.editable) return
                     if (root.mcsLevels) {
@@ -258,7 +259,7 @@ Column {
             }
             AdvancedActionButton {
                 objectName: "rangeRemove" + root.actionIndex
-                text: root.mcsLevels ? qsTr("Remove MCS Level") : qsTr("Remove area")
+                text: qsTr("Remove area")
                 enabled: root.mcsLevels ? Ranges.canRemoveMcsLevel(root.ranges, root.selectedArea) : root.ranges.length > 1
                 onClicked: if (enabled && root.editable) root.edited(root.mcsLevels
                     ? Ranges.removeMcsLevel(root.ranges, root.selectedArea) : Ranges.remove(root.ranges, root.selectedArea))
@@ -268,7 +269,7 @@ Column {
         Label {
             visible: root.mcsLevels
             width: parent.width; wrapMode: Text.WordWrap
-            text: qsTr("Adding or removing a level evenly distributes PWM ranges. Air firmware supports up to MCS 4.")
+            text: qsTr("Adding or removing an area evenly distributes PWM ranges. Areas can share the same MCS level.")
             color: settings_form.secondaryText; font.pixelSize: Typography.helper
         }
     }

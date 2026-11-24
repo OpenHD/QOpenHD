@@ -23,10 +23,12 @@
 
 .pragma library
 
+var maxAreas = 8
+
 function parse(text) {
     if (!text || text.length > 128) return []
     var entries = text.split(","), ranges = [], previous = 899
-    if (entries.length > 5) return []
+    if (entries.length > maxAreas) return []
     for (var i = 0; i < entries.length; ++i) {
         if (!/^\d+:\d+$/.test(entries[i])) return []
         var parts = entries[i].split(":"), upper = Number(parts[0]), value = Number(parts[1])
@@ -55,7 +57,7 @@ function setBoundary(ranges, index, upper) {
 }
 function split(ranges, index, value) {
     var next = copy(ranges)
-    if (next.length >= 5 || index < 0 || index >= next.length) return next
+    if (next.length >= maxAreas || index < 0 || index >= next.length) return next
     var low = index === 0 ? 900 : next[index-1].upper+1, high = next[index].upper
     if (high <= low) return next
     next.splice(index, 1, {upper: Math.floor((low+high)/2), value: next[index].value}, {upper: high, value: value})
@@ -77,14 +79,14 @@ function distribute(ranges) {
     return next
 }
 function nextMcsLevel(ranges) {
-    if (ranges.length >= 5) return -1
     for (var value = 0; value <= 4; ++value)
         if (!ranges.some(function(range) { return range.value === value })) return value
     return -1
 }
 function addMcsLevel(ranges) {
     var next = copy(ranges), value = nextMcsLevel(ranges)
-    if (value < 0) return next
+    if (next.length >= maxAreas) return next
+    if (value < 0) value = next[next.length - 1].value
     next.push({upper: 2100, value: value})
     return distribute(next)
 }

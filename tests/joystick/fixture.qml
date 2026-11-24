@@ -83,6 +83,7 @@ Item {
      property bool connected:true
      property bool radioSupported:true
      property bool rangesSupported:true
+     property int radioMaxAreas:0
      property bool luaSupported:true
      property bool has_params_fetched:true
      property int fetchRequests:0
@@ -100,13 +101,14 @@ Item {
      function system_is_alive(){return connected}
      function ensure_parameters_available(){fetchRequests++}
      function param_int_exists(id) {
+         if (id === "RC_RANGE_MAX") return radioMaxAreas > 0
          if (id === "RC_SET_BASE") return luaSupported
          return assignments[id] !== undefined ? radioSupported : true
      }
      function param_string_exists(id){return rangesSupported && profiles[id]!==undefined}
      function get_cached_string(id){return profiles[id] || ""}
      function try_update_parameter_string(id,value){if(error)return error;if(id===rejectId)return "Rejected";var log=writes.slice();log.push({id:id,value:value});writes=log;var next=Object.assign({},profiles);next[id]=value;profiles=next;update_count++;return ""}
-     function get_cached_int(id){return assignments[id]!==undefined?assignments[id]:id==="RC_SET_BASE"?base:enabledValue}
+     function get_cached_int(id){return id==="RC_RANGE_MAX"?radioMaxAreas:assignments[id]!==undefined?assignments[id]:id==="RC_SET_BASE"?base:enabledValue}
      function try_update_parameter_int(id,value){if(error)return error;if(id===rejectId)return "Rejected";var log=writes.slice();log.push({id:id,value:value});writes=log;if(assignments[id]!==undefined){var next=Object.assign({},assignments);next[id]=value;assignments=next}else if(id==="RC_SET_BASE")base=value;else enabledValue=value;update_count++;return ""}
      function queueWrite(id, value, profile) {
          ui_is_busy = true
@@ -501,7 +503,7 @@ Item {
          var rangeEditor=findChild(editor.contentItem,"channelRangeEditor1")
          var add=findChild(editor.contentItem,"rangeAdd1")
          var remove=findChild(editor.contentItem,"rangeRemove1")
-         compare(add.text,"+ Add MCS Level")
+         compare(add.text,"+ Area")
          for(var i=0;i<3;i++) {rangeEditor.selectedArea=i;verify(remove.enabled)}
          add.clicked()
          compare(Ranges.encode(editor.ranges[1]),"1200:0,1500:1,1800:2,2100:3")
@@ -564,6 +566,32 @@ Item {
                  verify(!reduced.some(function(range) {return range.value===j}))
              }
              ranges=Ranges.addMcsLevel(ranges)
+         }
+     }
+     function test_eight_radio_areas_data() {
+         return [{ tag: "bandwidth", channel: 3, action: 0, id: "RC_BW_RANGES" },
+                 { tag: "mcs", channel: 8, action: 1, id: "RC_MCS_RANGES" }]
+     }
+     function test_eight_radio_areas(data) {
+         var air = _ohdSystemAirSettingsModel
+         air.radioMaxAreas = 8
+         air.update_count++
+         try {
+             var editor = openEditor(data.channel)
+             var add = findChild(editor.contentItem, "rangeAdd" + data.action)
+             while (editor.ranges[data.action].length < 8) {
+                 verify(add.enabled)
+                 add.clicked()
+             }
+             verify(!add.enabled)
+             var encoded = Ranges.encode(editor.ranges[data.action])
+             saveEditor(editor)
+             compare(air.profiles[data.id], encoded)
+             editor = openEditor(data.channel)
+             compare(Ranges.encode(editor.ranges[data.action]), encoded)
+         } finally {
+             air.radioMaxAreas = 0
+             air.update_count++
          }
      }
      function test_empty_mcs_profile_uses_defaults_and_custom_values_remain_editable(){
