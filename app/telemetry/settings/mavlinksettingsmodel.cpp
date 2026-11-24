@@ -896,6 +896,7 @@ QVariantMap MavlinkSettingsModel::get_ui_metadata(QString param_id) const
     if(!exists){ result.insert("control","unsupported"); return result; }
     const auto documented = DocumentedParam::find_param(param_id.toStdString(),metadata_sys_id(),metadata_comp_id());
     const auto resolved=DocumentedParam::metadata(param_id.toStdString(),metadata_sys_id(),metadata_comp_id());
+    if (resolved["serialPortScan"].toBool()) result.insert("serialPortScan",true);
     result.insert("hidden",resolved["hidden"].toBool());
     result.insert("label",resolved["label"].toString(param_id));
     result.insert("group",resolved["group"].toString());

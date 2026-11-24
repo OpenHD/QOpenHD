@@ -19,6 +19,8 @@ Item {
          property int update_count:0
          property bool ui_is_busy:false
          property var values:({})
+         property var detectedPorts: []
+         property bool hasSerialScan: true
          property int writes:0
          property string lastId:""
          property var lastValue:""
@@ -26,10 +28,11 @@ Item {
          function param_string_exists(id){return typeof values[id]==="string"}
          function get_cached_int(id){return values[id]}
          function get_cached_string(id){return values[id]}
-         function get_ui_metadata(id){return {label:id,description:"",readOnly:false}}
-         function string_param_has_enum(id){return id === "TRACKER_UART_OUT"}
-         function string_param_get_enum_keys(id){return ["/dev/ttyUSB0","/dev/ttyUSB1"]}
-         function string_param_get_enum_values(id){return string_param_get_enum_keys(id)}
+         function get_ui_metadata(id){
+             return {label:id, description:"", readOnly:false, serialPortScan:hasSerialScan,
+                     keys:detectedPorts, values:detectedPorts}
+         }
+         function string_param_has_enum(id){return false}
          function ensure_parameters_available(){}
          function int_param_has_enum_keys_values(id){
              return id.indexOf("BAUD")>=0 || id.indexOf("GPIO_")===0 || id.indexOf("UART_PRI_")===0
@@ -68,6 +71,10 @@ Item {
          loader.active=false;settings_form.showAdvancedSettings=false;settings_form.showDeveloperSettings=false;_qopenhd.debugMenuPreview=false;_ohdSystemAir.is_alive=true;_ohdSystemGround.is_alive=true
          _ohdSystemAirSettingsModel.values={FC_UART_CONN:"/dev/ttyS1",FC_UART_BAUD:921600,FC_UART_FLWCTL:0,SBUS_EN:0,SBUS_DEV:"/dev/ttyS2",SBUS_HZ:50,GPIO_2:0,GPIO_26:0,OHD_UART_EN:0,OHD_UART_TLM:"/dev/ttyUSB0",OHD_UART_BAUD:115200,OHD_UART_FLW:0,UART_PRI_RC:3,UART_PRI_OHD:2,UART_PRI_FC:1}
          _ohdSystemGroundSettings.values={TRACKER_UART_OUT:"",TRACK_UART_BAUD:9600,TRACK_UART_FLOW:0,OHD_UART_EN:0,OHD_UART_TLM:"/dev/ttyUSB0",OHD_UART_BAUD:115200,OHD_UART_FLW:0,UART_PRI_RC:3,UART_PRI_OHD:2,UART_PRI_FC:1}
+         _ohdSystemAirSettingsModel.hasSerialScan=true
+         _ohdSystemGroundSettings.hasSerialScan=true
+         _ohdSystemAirSettingsModel.detectedPorts=["/dev/ttyS1","/dev/ttyS2","/dev/ttyUSB0"]
+         _ohdSystemGroundSettings.detectedPorts=["/dev/ttyUSB0","/dev/ttyUSB1"]
          _ohdSystemAirSettingsModel.writes=0;_ohdSystemGroundSettings.writes=0
          _ohdSystemAirSettingsModel.update_count++;_ohdSystemGroundSettings.update_count++
          loader.active=true;tryCompare(loader,"status",Loader.Ready);wait(50)
@@ -117,14 +124,14 @@ Item {
          var tracker=row("tracker","TRACKER_UART_OUT")
          var editor=findChild(tracker,"portChoiceEditor")
          compare(tracker.choices.map(function(entry){return entry.value}),
-                 ["","DEFAULT","/dev/ttyUSB0","/dev/ttyUSB1",null])
-         editor.activated(2)
+                 ["","/dev/ttyUSB0","/dev/ttyUSB1"])
+         editor.activated(1)
          compare(_ohdSystemGroundSettings.writes,0)
          compare(editor.currentIndex,0)
          verify(loader.item.validationError.length>0)
-         editor.activated(3)
+         editor.activated(2)
          compare(_ohdSystemGroundSettings.lastValue,"/dev/ttyUSB1")
-         compare(editor.currentIndex,3)
+         compare(editor.currentIndex,2)
      }
      function test_compact_dropdown_keyboard(){
          selectUnit(1)
@@ -137,19 +144,55 @@ Item {
          keyClick(Qt.Key_Down)
          keyClick(Qt.Key_Return)
          tryCompare(editor.popup,"opened",false)
-         compare(_ohdSystemGroundSettings.lastValue,"DEFAULT")
+         compare(_ohdSystemGroundSettings.lastValue,"/dev/ttyUSB0")
          compare(findChild(tracker,"portChoiceEditor"),editor)
+     }
+     function test_scan_is_per_unit_and_updates_without_replacing_the_row(){
+         var fc=row("fc","FC_UART_CONN")
+         compare(fc.choices.map(function(entry){return entry.value}),
+                 ["","/dev/ttyS1","/dev/ttyS2","/dev/ttyUSB0"])
+         var editor=findChild(fc,"portChoiceEditor")
+         _ohdSystemAirSettingsModel.detectedPorts=["/dev/ttyACM0"]
+         _ohdSystemAirSettingsModel.update_count++
+         compare(fc.choices.map(function(entry){return entry.value}),["","/dev/ttyACM0"])
+         compare(editor.currentIndex,-1)
+         compare(editor.displayText,"Saved port (/dev/ttyS1)")
+         fc.commitChoice("/dev/ttyS1")
+         fc.commitChoice("DEFAULT")
+         compare(_ohdSystemAirSettingsModel.writes,0)
+         fc.commitChoice("/dev/ttyACM0")
+         compare(_ohdSystemAirSettingsModel.lastValue,"/dev/ttyACM0")
+
+         selectUnit(1)
+         compare(row("tracker","TRACKER_UART_OUT").choices.map(function(entry){return entry.value}),
+                 ["","/dev/ttyUSB0","/dev/ttyUSB1"])
+     }
+     function test_missing_inventory_does_not_offer_legacy_choices(){
+         selectUnit(1)
+         var tracker=row("tracker","TRACKER_UART_OUT")
+         var editor=findChild(tracker,"portChoiceEditor")
+         _ohdSystemGroundSettings.hasSerialScan=false
+         _ohdSystemGroundSettings.update_count++
+         compare(tracker.choices.length,1)
+         compare(editor.displayText,"UART list unavailable")
+         verify(!editor.enabled)
+
+         _ohdSystemGroundSettings.hasSerialScan=true
+         _ohdSystemGroundSettings.detectedPorts=[]
+         _ohdSystemGroundSettings.update_count++
+         compare(tracker.choices.length,1)
+         compare(editor.displayText,"No UARTs detected")
+         verify(!editor.enabled)
      }
      function test_air_conflicts_and_missing_port(){
          settings_form.showAdvancedSettings=true
-         row("sbus","SBUS_DEV").commitChoice("/dev//ttyS1")
+         row("sbus","SBUS_DEV").commitChoice("/dev/ttyS1")
          row("sbus","SBUS_EN").commitToggle(true)
          compare(_ohdSystemAirSettingsModel.values.SBUS_EN,0)
          row("airLink","OHD_UART_TLM").commitChoice("")
          row("airLink","OHD_UART_EN").commitToggle(true)
          compare(_ohdSystemAirSettingsModel.values.OHD_UART_EN,0)
-         row("airLink","OHD_UART_TLM").commitChoice("DEFAULT")
-         row("fc","FC_UART_CONN").commitChoice("DEFAULT")
+         row("airLink","OHD_UART_TLM").commitChoice("/dev/ttyUSB0")
          row("airLink","OHD_UART_EN").commitToggle(true)
          compare(_ohdSystemAirSettingsModel.values.OHD_UART_EN,1)
      }
@@ -170,7 +213,7 @@ Item {
      }
      function test_preview(){
          selectUnit(1)
-         _qopenhd.debugMenuPreview=true;row("tracker","TRACKER_UART_OUT").commitChoice("DEFAULT");compare(_ohdSystemGroundSettings.writes,0)
+         _qopenhd.debugMenuPreview=true;row("tracker","TRACKER_UART_OUT").commitChoice("/dev/ttyUSB1");compare(_ohdSystemGroundSettings.writes,0)
      }
      function test_units_only_show_their_own_cards(){
          verify(section("fc") !== null)

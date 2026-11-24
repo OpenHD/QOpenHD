@@ -1,7 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
-import ".."
 import "../MenuTypography.js" as Typography
 import "AirSettingsLayout.js" as AirLayout
 
@@ -28,7 +27,6 @@ FocusScope {
     readonly property bool busy: settingsModel.ui_is_busy || !connectionAlive || _qopenhd.debugMenuPreview
     readonly property bool toggle: integer && (metadata.control === "toggle" || ["ETH_LINK_EN", "FC_UART_FLWCTL", "OHD_UART_EN", "OHD_UART_FLW", "TRACK_UART_FLOW", "LOG_OPENHD", "LOG_MAVLINK", "ADSB_ENABLE", "SBUS_EN", "CONFIG_BOOT_AIR"].indexOf(paramId) >= 0)
     readonly property bool port: ["FC_UART_CONN", "OHD_UART_TLM", "SBUS_DEV", "TRACKER_UART_OUT"].indexOf(paramId) >= 0
-    readonly property bool hasPortChoices: { revision; return port && settingsModel.string_param_has_enum(paramId) }
     readonly property bool cells: paramId === "FC_BATT_N_CELLS"
     readonly property var choices: {
         if (cells) {
@@ -38,20 +36,21 @@ FocusScope {
             return entries
         }
         if (!port) return []
-        var ports = [{label: qsTr("Disabled"), value: ""}, {label: qsTr("Board default"), value: "DEFAULT"}]
-        if (hasPortChoices) {
-            var keys = settingsModel.string_param_get_enum_keys(paramId)
-            var values = settingsModel.string_param_get_enum_values(paramId)
-            for (var i = 0; i < values.length; ++i) {
-                if (values[i] && values[i] !== "DEFAULT")
+        var ports = [{label: qsTr("Disabled"), value: ""}]
+        if (metadata.serialPortScan === true) {
+            var keys = metadata.keys || []
+            var values = metadata.values || []
+            for (var i = 0; i < values.length; ++i)
+                if (values[i].indexOf("/dev/") === 0)
                     ports.push({label: keys[i], value: values[i]})
-            }
         }
-        var current = String(value)
-        if (!ports.some(function(entry) { return entry.value === current }))
-            ports.push({label: current, value: current})
-        ports.push({label: qsTr("Custom port..."), value: null})
         return ports
+    }
+    readonly property string serialDisplayValue: {
+        if (value === "DEFAULT") return qsTr("Board default")
+        if (metadata.serialPortScan !== true) return value || qsTr("UART list unavailable")
+        if (!value) return choices.length === 1 ? qsTr("No UARTs detected") : qsTr("Disabled")
+        return qsTr("Saved port (%1)").arg(value)
     }
     readonly property bool password: paramId === "WIFI_HS_PW" || paramId === "WIFI_CL_PW"
     readonly property string label: labelOverride || AirLayout.labels[paramId] || metadata.label || paramId
@@ -93,7 +92,7 @@ FocusScope {
     }
     function commitChoice(selected) {
         if (locked || busy) return
-        if (selected === null) { customPortEditor.text = String(value); customPortDialog.open(); return }
+        if (port && !choices.some(function(choice) { return choice.value === selected })) return
         if (!changeAllowed(selected)) return
         var warning = settingsModel.get_warning_before_safe(paramId)
         if (warning) _messageBoxInstance.set_text_and_show(warning)
@@ -149,15 +148,18 @@ FocusScope {
             objectName: row.port ? "portChoiceEditor" : ""
             model: row.choices.map(function(entry) { return entry.label })
             currentIndex: valueIndex()
-            enabled: !row.locked && !row.busy
+            displayText: row.port && (currentIndex < 0 || row.choices.length === 1)
+                ? row.serialDisplayValue : currentText
+            enabled: !row.locked && !row.busy && (!row.port || row.choices.length > 1 || !!row.value)
             Accessible.name: row.label
 
             function valueIndex() {
                 return row.choices.findIndex(function(entry) {
-                    return entry.value !== null && String(entry.value) === String(row.value)
+                    return String(entry.value) === String(row.value)
                 })
             }
             onActivated: function(index) {
+                if (index < 0 || index >= row.choices.length) return
                 row.commitChoice(row.choices[index].value)
                 currentIndex = Qt.binding(choiceEditor.valueIndex)
             }
@@ -223,15 +225,4 @@ FocusScope {
     }
     Rectangle { visible: row.showSeparator; anchors.bottom: parent.bottom; width: parent.width; height: 1; color: settings_form.lineColor }
     Keys.onEscapePressed: backRequested()
-    AdvancedDialog {
-        id: customPortDialog
-        parent: Overlay.overlay
-        x: parent ? (parent.width - width) / 2 : 0
-        y: parent ? (parent.height - height) / 2 : 0
-        width: Math.min(380, parent ? parent.width - 32 : 380)
-        title: qsTr("Serial port")
-        standardButtons: Dialog.Ok | Dialog.Cancel
-        contentItem: TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6; id: customPortEditor; placeholderText: qsTr("Device path, e.g. /dev/ttyUSB0"); selectByMouse: true }
-        onAccepted: if(!row.locked && !row.busy && customPortEditor.text.trim()) row.commitChoice(customPortEditor.text.trim())
-    }
 }
