@@ -89,6 +89,7 @@ Item {
     function pwm(channel) { return fcValues.length === 18 ? fcValues[channel-1] : -1 }
     function valid(value) { return value >= 800 && value <= 2200 }
     function openChannel(channel) {
+        if (editor.saving) return
         editor.channel = channel
         editor.keyboardRanges = keyboardProfiles[channel] || Ranges.parse(defaultKeyboardRanges)
         editor.waitingForAirSettings = !editor.airSettingsReady
@@ -188,12 +189,14 @@ Item {
         property var originalRanges: []
         property string error: ""
         property bool savedChanges: false
+        property var pendingWrites: []
+        readonly property bool saving: pendingWrites.length > 0
         parent: Overlay.overlay
         anchors.centerIn: parent
         width: Math.min(780, parent.width - 24)
         height: Math.min(parent.height - 24, Math.max(300, editorContent.implicitHeight + padding*2 + 156))
         modal: true; focus: true; padding: width < 500 ? 16 : 24
-        closePolicy: Popup.CloseOnEscape
+        closePolicy: saving ? Popup.NoAutoClose : Popup.CloseOnEscape
         onAboutToShow: {
             if (typeof hudOverlayGrid !== "undefined" && hudOverlayGrid.rcKeyboardEditor !== undefined)
                 hudOverlayGrid.rcKeyboardEditor = editor
@@ -210,16 +213,17 @@ Item {
                 selectedAction = root.keyboardProfiles[channel] ? root.keyboardAction : originalAssignments.indexOf(channel)
         }
         function selectAction(index) {
-            if (controller.armed) return
+            if (controller.armed || saving) return
             selectionEdited = true
             selectedAction = index
             error = ""
         }
         function editRanges(index, next) {
-            if (controller.armed || !root.rangesSupported(root.actions[index])) return
+            if (controller.armed || saving || !root.rangesSupported(root.actions[index])) return
             var draft = ranges.slice(); draft[index] = next; ranges = draft
         }
         function apply() {
+            if (saving) return
             if (controller.armed) { error = qsTr("Disarm before changing RC settings."); return }
             if (!selectedRadioAvailable) { error = root.radioAvailabilityMessage(); return }
             if (selectedAction === root.keyboardAction &&
@@ -238,14 +242,13 @@ Item {
                 if (!Ranges.valid(ranges[check], checkedAction.values)) { error = qsTr("Invalid areas. Use increasing PWM boundaries covering 900–2100 µs."); return }
                 if (Ranges.encode(ranges[check]) !== originalRanges[check] && !root.rangesSupported(checkedAction)) { error = qsTr("Update the Air firmware to customize ranges."); return }
             }
+            var writes = []
             // Save complete profiles before enabling a new channel assignment.
             for (var rangeIndex=0; rangeIndex<root.actions.length; ++rangeIndex) {
                 if (!selected[rangeIndex]) continue
                 var rangeAction = root.actions[rangeIndex], encoded = Ranges.encode(ranges[rangeIndex])
                 if (encoded === originalRanges[rangeIndex]) continue
-                if (!controller.write(controller.airParams, rangeAction.rangeId, encoded, true)) { error = controller.message; return }
-                savedChanges = true
-                var rangeSnapshot = originalRanges.slice(); rangeSnapshot[rangeIndex] = encoded; originalRanges = rangeSnapshot
+                writes.push({ id: rangeAction.rangeId, value: encoded, index: rangeIndex, profile: true })
             }
             // Release the old function before assigning the replacement.
             for (var pass=0; pass<2; ++pass) {
@@ -254,11 +257,42 @@ Item {
                     var next = selected[i] ? channel : (originalAssignments[i] === channel ? 0 : originalAssignments[i])
                     if (next === originalAssignments[i] || (pass === 0 ? next !== 0 : next === 0)) continue
                     if (!root.supported(action)) { error = qsTr("Air unit disconnected or function unavailable."); return }
-                    if (!controller.write(controller.airParams, action.id, next, false)) { error = controller.message; return }
-                    savedChanges = true
-                    var snapshot = originalAssignments.slice(); snapshot[i] = next; originalAssignments = snapshot
+                    writes.push({ id: action.id, value: next, index: i, profile: false })
                 }
             }
+            error = ""
+            pendingWrites = writes
+            writeNext()
+        }
+        function failSave(message) {
+            error = message
+            pendingWrites = []
+        }
+        function writeNext() {
+            if (!saving) {
+                finishSave()
+                return
+            }
+            if (controller.armed) {
+                failSave(qsTr("Disarm before changing RC settings."))
+                return
+            }
+            var step = pendingWrites[0]
+            var action = root.actions[step.index]
+            if (!root.supported(action) || (step.profile && !root.rangesSupported(action))) {
+                failSave(qsTr("Air unit disconnected or function unavailable."))
+                return
+            }
+            if (controller.airParams.ui_is_busy) {
+                failSave(qsTr("Air unit is busy. Try again."))
+                return
+            }
+            if (step.profile)
+                controller.airParams.try_set_param_string_async(step.id, step.value, false)
+            else
+                controller.airParams.try_set_param_int_async(step.id, step.value, false)
+        }
+        function finishSave() {
             if (selectedAction === root.keyboardAction || root.keyboardProfiles[channel]) {
                 var profiles = Object.assign({}, root.keyboardProfiles)
                 if (selectedAction === root.keyboardAction) profiles[channel] = keyboardRanges
@@ -266,6 +300,30 @@ Item {
                 settings.rc_keyboard_mappings = Ranges.encodeKeyboardProfiles(profiles)
             }
             close()
+        }
+        Connections {
+            target: controller.airParams
+            function onParameterWriteFinished(id, success) {
+                if (!editor.saving || editor.pendingWrites[0].id !== id) return
+                const step = editor.pendingWrites[0]
+                if (!success) {
+                    editor.failSave(qsTr("Could not save %1 (%2). Check the Air connection and try again.")
+                                    .arg(root.actions[step.index].name).arg(id))
+                    return
+                }
+                editor.savedChanges = true
+                var snapshot = (step.profile ? editor.originalRanges : editor.originalAssignments).slice()
+                snapshot[step.index] = step.value
+                if (step.profile) editor.originalRanges = snapshot
+                else editor.originalAssignments = snapshot
+                if (editor.pendingWrites.length === 1) {
+                    editor.finishSave()
+                    editor.pendingWrites = []
+                } else {
+                    editor.pendingWrites = editor.pendingWrites.slice(1)
+                    Qt.callLater(editor.writeNext)
+                }
+            }
         }
         contentItem: Item {
             ColumnLayout {
@@ -292,6 +350,7 @@ Item {
                 Flickable {
                     id: editorScroll
                     objectName: "channelEditorScroll"
+                    enabled: !editor.saving
                     Layout.fillWidth: true; Layout.fillHeight: true; Layout.minimumHeight: 0
                     clip: true; contentHeight: editorContent.implicitHeight; contentWidth: width
                     boundsBehavior: Flickable.StopAtBounds
@@ -403,9 +462,9 @@ Item {
                 Rectangle { Layout.fillWidth: true; height: 1; color: settings_form.lineColor }
                 RowLayout {
                     Layout.fillWidth: true
-                    AdvancedActionButton { text: qsTr("Cancel"); onClicked: editor.close() }
+                    AdvancedActionButton { text: qsTr("Cancel"); enabled: !editor.saving; onClicked: editor.close() }
                     Item { Layout.fillWidth: true }
-                    AdvancedActionButton { objectName: "channelApply"; text: qsTr("Save"); primary: true; enabled: !controller.armed && editor.selectedRadioAvailable; onClicked: editor.apply() }
+                    AdvancedActionButton { objectName: "channelApply"; text: editor.saving ? qsTr("Saving…") : qsTr("Save"); primary: true; enabled: !editor.saving && !controller.armed && editor.selectedRadioAvailable; onClicked: editor.apply() }
                 }
             }
         }

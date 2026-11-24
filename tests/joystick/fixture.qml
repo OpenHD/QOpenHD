@@ -38,7 +38,7 @@ Item {
      id: settings
      property string rc_keyboard_mappings: "{}"
      property bool set_mavlink_message_rates: true
-     property bool mavlink_message_rates_high_speed_rc_channels: false
+     property bool mavlink_message_rates_high_speed_rc_channels: true
      property var savedRcRate: undefined
      function setValue(key, value) {
          if (key === "mavlink_message_rates_high_speed_rc_channels") savedRcRate = value
@@ -89,6 +89,10 @@ Item {
      property var profiles: ({RC_BW_RANGES:"1500:20,2100:40",RC_MCS_RANGES:"1300:0,1700:2,2100:3"})
      property string error:""
      property string rejectId:""
+     property bool ui_is_busy: false
+     property bool deferWrite: false
+     property var pendingWrite: null
+     signal parameterWriteFinished(string id, bool success)
      property var assignments: ({BW_VIA_RC:3,MCS_VIA_RC:8,TXMODE_VIA_RC:0,FHSS_VIA_RC:0})
      property var writes: []
      property int base:0
@@ -104,6 +108,22 @@ Item {
      function try_update_parameter_string(id,value){if(error)return error;if(id===rejectId)return "Rejected";var log=writes.slice();log.push({id:id,value:value});writes=log;var next=Object.assign({},profiles);next[id]=value;profiles=next;update_count++;return ""}
      function get_cached_int(id){return assignments[id]!==undefined?assignments[id]:id==="RC_SET_BASE"?base:enabledValue}
      function try_update_parameter_int(id,value){if(error)return error;if(id===rejectId)return "Rejected";var log=writes.slice();log.push({id:id,value:value});writes=log;if(assignments[id]!==undefined){var next=Object.assign({},assignments);next[id]=value;assignments=next}else if(id==="RC_SET_BASE")base=value;else enabledValue=value;update_count++;return ""}
+     function queueWrite(id, value, profile) {
+         ui_is_busy = true
+         pendingWrite = { id: id, value: value, profile: profile }
+         if (!deferWrite) Qt.callLater(completeWrite)
+     }
+     function completeWrite() {
+         var step = pendingWrite
+         if (!step) return
+         var result = step.profile ? try_update_parameter_string(step.id, step.value)
+                                   : try_update_parameter_int(step.id, step.value)
+         pendingWrite = null
+         ui_is_busy = false
+         parameterWriteFinished(step.id, result === "")
+     }
+     function try_set_param_string_async(id, value, logResult) { queueWrite(id, value, true) }
+     function try_set_param_int_async(id, value, logResult) { queueWrite(id, value, false) }
  }
  QtObject {id:_joystickInputModel;property bool is_alive:true;property var values:[1500,1500,1000,1500,65535,65535,65535,65535,2000,65535,65535,65535,65535,65535,65535,65535,65535,65535];function channelValues(){return values.slice()}}
  Rectangle {anchors.fill:parent;color:"#091827"}
@@ -113,6 +133,10 @@ Item {
  TestCase {
      name:"JoystickSettings";when:windowShown
      function init(){settings.rc_keyboard_mappings="{}";keys.clear();settings_form.showAdvancedSettings=true;_ohdSystemGroundSettings.lastId="";loader.active=false;_fcMavlinkSystem.armed=false;_ohdSystemGroundSettings.connected=true;_ohdSystemGroundSettings.modern=true;_ohdSystemGroundSettings.enabledValue=0;_ohdSystemGroundSettings.error="";_ohdSystemGroundSettings.saved="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18";_ohdSystemGroundSettings.update_count++;_rcchannelsmodelfc.is_alive=true;_rcchannelsmodelfc.setProperty(2,"curr_value",1500);_ohdSystemAirSettingsModel.connected=true;_ohdSystemAirSettingsModel.radioSupported=true;_ohdSystemAirSettingsModel.rangesSupported=true;_ohdSystemAirSettingsModel.profiles={RC_BW_RANGES:"1500:20,2100:40",RC_MCS_RANGES:"1300:0,1700:2,2100:3"};_ohdSystemAirSettingsModel.error="";_ohdSystemAirSettingsModel.rejectId="";_ohdSystemAirSettingsModel.assignments={BW_VIA_RC:3,MCS_VIA_RC:8,TXMODE_VIA_RC:0,FHSS_VIA_RC:0};_ohdSystemAirSettingsModel.writes=[];_ohdSystemAirSettingsModel.base=0;_ohdSystemAirSettingsModel.update_count++;loader.active=true;tryCompare(loader,"status",Loader.Ready);wait(50)}
+     function saveEditor(editor) {
+         editor.apply()
+         tryCompare(editor, "saving", false)
+     }
      function test_standalone_page_focus_and_back(){
          var page = standalonePage.createObject(scene)
          verify(page !== null)
@@ -191,11 +215,11 @@ Item {
          editor.close();tryCompare(editor,"opened",false)
          editor=openEditor(6)
          compare(editor.selected[0],false)
-         chooseFunction(editor,0);editor.apply()
+         chooseFunction(editor,0);saveEditor(editor)
          compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,6)
          compare(_ohdSystemAirSettingsModel.writes.length,1)
          tryCompare(editor,"opened",false)
-         editor=openEditor(6);chooseFunction(editor,-1);editor.apply()
+         editor=openEditor(6);chooseFunction(editor,-1);saveEditor(editor)
          compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,0)
          compare(_ohdSystemAirSettingsModel.assignments.MCS_VIA_RC,8)
      }
@@ -213,7 +237,7 @@ Item {
              verify(picker.model.some(function(option) { return option.actionIndex === 1 }))
              chooseFunction(editor, 0)
              compare(findChild(editor.contentItem, "channelApply").enabled, false)
-             editor.apply()
+             saveEditor(editor)
              compare(air.writes.length, 0)
              _ohdSystemAir.is_alive = true
              verify(picker.model.some(function(option) { return option.actionIndex === 0 }))
@@ -252,7 +276,7 @@ Item {
              air.update_count++
              air.has_params_fetched = true
              verify(findChild(editor.contentItem, "channelApply").enabled)
-             editor.apply()
+             saveEditor(editor)
              compare(air.assignments.MCS_VIA_RC, 6)
          } finally {
              air.has_params_fetched = true
@@ -263,12 +287,12 @@ Item {
      function test_channel_functions_rejected_stale_and_armed(){
          var editor=openEditor(6)
          chooseFunction(editor,0)
-         _fcMavlinkSystem.armed=true;editor.apply()
+         _fcMavlinkSystem.armed=true;saveEditor(editor)
          compare(_ohdSystemAirSettingsModel.writes.length,0);verify(editor.opened)
-         _fcMavlinkSystem.armed=false;_ohdSystemAirSettingsModel.error="Rejected";editor.apply()
-         compare(editor.error,"Rejected");verify(editor.opened)
+         _fcMavlinkSystem.armed=false;_ohdSystemAirSettingsModel.error="Rejected";saveEditor(editor)
+         verify(editor.error.indexOf("Could not save") >= 0);verify(editor.opened)
          _ohdSystemAirSettingsModel.error="";_ohdSystemAirSettingsModel.try_update_parameter_int("BW_VIA_RC",9)
-         editor.apply();verify(editor.error.indexOf("changed")>=0)
+         saveEditor(editor);verify(editor.error.indexOf("changed")>=0)
          compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,9)
      }
      function test_channel_ranges_follow_fc_pwm(){
@@ -316,7 +340,7 @@ Item {
          compare(rangeEditor.selectedArea,1)
          compare(_ohdSystemAirSettingsModel.writes.length,0)
          var expected=Ranges.encode(editor.ranges[0])
-         editor.apply()
+         saveEditor(editor)
          compare(_ohdSystemAirSettingsModel.profiles.RC_BW_RANGES,expected)
          compare(_ohdSystemAirSettingsModel.writes.length,1)
          compare(_ohdSystemAirSettingsModel.enabledValue,0)
@@ -331,13 +355,13 @@ Item {
          var keyboardOption = picker.model.find(function(option) { return option.text === "Keyboard" })
          verify(keyboardOption !== undefined)
          chooseFunction(editor, keyboardOption.actionIndex)
-         editor.apply()
+         saveEditor(editor)
          verify(editor.opened)
          verify(editor.error.indexOf("direction") >= 0)
          compare(Ranges.encode(editor.keyboardRanges), "1400:0,1600:0,2100:0")
          setAreaValue(editor, keyboardOption.actionIndex, 0, Qt.Key_Left)
          setAreaValue(editor, keyboardOption.actionIndex, 2, Qt.Key_Right)
-         editor.apply()
+         saveEditor(editor)
          tryCompare(editor, "opened", false)
          compare(Ranges.keyboardProfiles(settings.rc_keyboard_mappings)[6][0].value, Qt.Key_Left)
          compare(Ranges.keyboardProfiles(settings.rc_keyboard_mappings)[6][1].value, 0)
@@ -348,7 +372,7 @@ Item {
          editor = openEditor(6)
          compare(editor.selectedAction, keyboardOption.actionIndex)
          chooseFunction(editor, -1)
-         editor.apply()
+         saveEditor(editor)
          tryCompare(editor, "opened", false)
          compare(settings.rc_keyboard_mappings, "{}")
          compare(air.assignments.FHSS_VIA_RC, 6)
@@ -363,7 +387,7 @@ Item {
          chooseFunction(editor, keyboardOption.actionIndex)
          editor.keyboardRanges = Ranges.parse("1500:0,2100:0")
          setAreaValue(editor, keyboardOption.actionIndex, 1, Qt.Key_Down)
-         editor.apply()
+         saveEditor(editor)
          tryCompare(editor, "opened", false)
          compare(air.writes.length, 0)
          tryCompare(keyboard, "suspended", false)
@@ -461,11 +485,11 @@ Item {
          editor.close();tryCompare(editor,"opened",false)
          editor=openEditor(3)
          compare(editor.ranges[0].length,2)
-         editor.editRanges(0,Ranges.parse("1300:10,1700:20,2100:40"));editor.apply()
+         editor.editRanges(0,Ranges.parse("1300:10,1700:20,2100:40"));saveEditor(editor)
          compare(_ohdSystemAirSettingsModel.profiles.RC_BW_RANGES,"1300:10,1700:20,2100:40")
          editor=openEditor(3)
          compare(editor.ranges[0].length,3)
-         findChild(editor.contentItem,"rangeReset0").clicked();editor.apply()
+         findChild(editor.contentItem,"rangeReset0").clicked();saveEditor(editor)
          compare(_ohdSystemAirSettingsModel.profiles.RC_BW_RANGES,"1500:20,2100:40")
      }
      function test_mcs_defaults_add_remove_and_reopen(){
@@ -484,7 +508,7 @@ Item {
          add.clicked()
          compare(Ranges.encode(editor.ranges[1]),"1140:0,1380:1,1620:2,1860:3,2100:4")
          verify(!add.enabled);add.clicked();compare(editor.ranges[1].length,5)
-         var expected=Ranges.encode(editor.ranges[1]);editor.apply()
+         var expected=Ranges.encode(editor.ranges[1]);saveEditor(editor)
          compare(_ohdSystemAirSettingsModel.profiles.RC_MCS_RANGES,expected)
          // Recreate the page: profiles are read from the persistent Air parameter, not page state.
          loader.active=false;loader.active=true;tryCompare(loader,"status",Loader.Ready)
@@ -503,7 +527,7 @@ Item {
          findChild(editor.contentItem,"rangeRemove1").clicked()
          compare(Ranges.encode(editor.ranges[1]),"2100:2")
          verify(!findChild(editor.contentItem,"rangeRemove1").enabled)
-         editor.apply()
+         saveEditor(editor)
          editor=openEditor(8)
          compare(Ranges.encode(editor.ranges[1]),"2100:2")
      }
@@ -520,7 +544,7 @@ Item {
          _ohdSystemAirSettingsModel.update_count++
          var editor=openEditor(8)
          compare(Ranges.encode(editor.ranges[1]),data.profile)
-         editor.apply()
+         saveEditor(editor)
          compare(_ohdSystemAirSettingsModel.writes.length,0)
          compare(_ohdSystemAirSettingsModel.profiles.RC_MCS_RANGES,data.profile)
      }
@@ -548,7 +572,7 @@ Item {
          var editor=openEditor(8)
          compare(Ranges.encode(editor.ranges[1]),"1300:0,1700:1,2100:2")
          setAreaValue(editor,1,0,1);setAreaValue(editor,1,1,3);setAreaValue(editor,1,2,4)
-         editor.apply()
+         saveEditor(editor)
          compare(_ohdSystemAirSettingsModel.profiles.RC_MCS_RANGES,"1300:1,1700:3,2100:4")
      }
      function test_mcs_compact_layout_and_direct_save(){
@@ -577,25 +601,25 @@ Item {
      function test_custom_ranges_rejected_stale_and_disconnected(){
          var editor=openEditor(6);chooseFunction(editor,0)
          editor.editRanges(0,Ranges.parse("1300:10,1700:20,2100:40"))
-         _ohdSystemAirSettingsModel.error="Rejected";editor.apply()
-         compare(editor.error,"Rejected");compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,3)
+         _ohdSystemAirSettingsModel.error="Rejected";saveEditor(editor)
+         verify(editor.error.indexOf("Could not save") >= 0);compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,3)
          compare(_ohdSystemAirSettingsModel.profiles.RC_BW_RANGES,"1500:20,2100:40")
          _ohdSystemAirSettingsModel.error="";_ohdSystemAirSettingsModel.connected=false;_ohdSystemAirSettingsModel.update_count++
-         editor.apply();compare(_ohdSystemAirSettingsModel.writes.length,0)
+         saveEditor(editor);compare(_ohdSystemAirSettingsModel.writes.length,0)
          editor.close();tryCompare(editor,"opened",false)
          _ohdSystemAirSettingsModel.connected=true;_ohdSystemAirSettingsModel.update_count++
          editor=openEditor(3)
          _ohdSystemAirSettingsModel.try_update_parameter_string("RC_BW_RANGES","1300:10,1700:20,2100:40")
-         editor.apply();verify(editor.error.indexOf("changed")>=0)
+         saveEditor(editor);verify(editor.error.indexOf("changed")>=0)
      }
      function test_custom_ranges_partial_save_can_retry(){
          var editor=openEditor(6);chooseFunction(editor,0)
          editor.editRanges(0,Ranges.parse("1300:10,1700:20,2100:40"))
-         _ohdSystemAirSettingsModel.rejectId="BW_VIA_RC";editor.apply()
-         verify(editor.opened);verify(editor.savedChanges);compare(editor.error,"Rejected")
+         _ohdSystemAirSettingsModel.rejectId="BW_VIA_RC";saveEditor(editor)
+         verify(editor.opened);verify(editor.savedChanges);verify(editor.error.indexOf("Could not save") >= 0)
          compare(_ohdSystemAirSettingsModel.profiles.RC_BW_RANGES,"1300:10,1700:20,2100:40")
          compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,3)
-         _ohdSystemAirSettingsModel.rejectId="";editor.apply()
+         _ohdSystemAirSettingsModel.rejectId="";saveEditor(editor)
          tryCompare(editor,"opened",false)
          compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,6)
          compare(_ohdSystemAirSettingsModel.writes.length,2)
@@ -614,7 +638,7 @@ Item {
          _fcMavlinkSystem.armed=true
          editor.editRanges(0,Ranges.parse("1500:20,2100:40"))
          compare(editor.ranges[0].length,3)
-         editor.apply();compare(_ohdSystemAirSettingsModel.writes.length,0)
+         saveEditor(editor);compare(_ohdSystemAirSettingsModel.writes.length,0)
          verify(!findChild(editor.contentItem,"channelRangeEditor0").editable)
      }
      function test_old_firmware_ranges_remain_read_only(){
@@ -624,7 +648,7 @@ Item {
          compare(Ranges.encode(editor.ranges[0]),"1300:10,1700:20,2100:40")
          editor.editRanges(0,Ranges.parse("1500:20,2100:40"))
          compare(editor.ranges[0].length,3)
-         editor.apply();compare(_ohdSystemAirSettingsModel.writes.length,0)
+         saveEditor(editor);compare(_ohdSystemAirSettingsModel.writes.length,0)
      }
      function test_range_boundaries_and_validation(){
          var ranges=Ranges.parse("1300:0,1700:2,2100:3")
@@ -638,7 +662,7 @@ Item {
          compare(Ranges.parse("1500:20,2100:40,").length,0)
          compare(Ranges.parse("2100:20x").length,0)
          var editor=openEditor(3)
-         editor.editRanges(0,[{upper:2100,value:80}]);editor.apply()
+         editor.editRanges(0,[{upper:2100,value:80}]);saveEditor(editor)
          verify(editor.opened);verify(editor.error.indexOf("Invalid")>=0)
          compare(_ohdSystemAirSettingsModel.writes.length,0)
      }
@@ -646,7 +670,7 @@ Item {
          var editor=openEditor(6)
          chooseFunction(editor,0)
          _ohdSystemAirSettingsModel.connected=false;_ohdSystemAirSettingsModel.update_count++
-         editor.apply();verify(editor.opened);compare(_ohdSystemAirSettingsModel.writes.length,0)
+         saveEditor(editor);verify(editor.opened);compare(_ohdSystemAirSettingsModel.writes.length,0)
          verify(findChild(editor.contentItem,"channelFunctionPicker").enabled)
      }
      function test_channel_popup_layout(){
@@ -706,16 +730,40 @@ Item {
      function test_fast_rc_telemetry_requests_persisted_rate() {
          var toggle = findChild(loader.item, "fastRcUpdates")
          verify(toggle.visible)
-         compare(toggle.checked, false)
-         mouseClick(toggle)
-         compare(settings.mavlink_message_rates_high_speed_rc_channels, true)
-         compare(_mavlinkTelemetry.requestedRcRate, true)
+         compare(toggle.checked, true)
          mouseClick(toggle)
          compare(settings.mavlink_message_rates_high_speed_rc_channels, false)
          compare(_mavlinkTelemetry.requestedRcRate, false)
+         mouseClick(toggle)
+         compare(settings.mavlink_message_rates_high_speed_rc_channels, true)
+         compare(_mavlinkTelemetry.requestedRcRate, true)
          settings.set_mavlink_message_rates = false
          verify(!toggle.enabled)
          settings.set_mavlink_message_rates = true
+     }
+     function test_radio_settings_remain_responsive_while_waiting_for_air() {
+         var air = _ohdSystemAirSettingsModel
+         var editor = openEditor(6)
+         chooseFunction(editor, 0)
+         editor.editRanges(0, Ranges.parse("1300:10,1700:20,2100:40"))
+         air.deferWrite = true
+         try {
+             editor.apply()
+             verify(editor.saving)
+             compare(air.pendingWrite.id, "RC_BW_RANGES")
+             verify(!findChild(editor.contentItem, "channelApply").enabled)
+             _rcchannelsmodelfc.setProperty(5, "curr_value", 1700)
+             _rcchannelsmodelfc.channelsUpdated()
+             compare(findChild(loader.item, "joystickChannel6").value, 1700)
+             air.completeWrite()
+             tryVerify(function() { return air.pendingWrite && air.pendingWrite.id === "BW_VIA_RC" })
+             air.completeWrite()
+             tryCompare(editor, "opened", false)
+             compare(air.assignments.BW_VIA_RC, 6)
+         } finally {
+             air.deferWrite = false
+             air.completeWrite()
+         }
      }
      function test_normal_settings_show_only_channel_cards(){
          settings_form.showAdvancedSettings=false;wait(30)
@@ -733,24 +781,24 @@ Item {
          var editor=openEditor(6)
          chooseFunction(editor,0);chooseFunction(editor,1)
          verify(!editor.selected[0]);verify(editor.selected[1])
-         editor.apply()
+         saveEditor(editor)
          compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,3)
          compare(_ohdSystemAirSettingsModel.assignments.MCS_VIA_RC,6)
          editor=openEditor(6)
-         chooseFunction(editor,0);editor.apply()
+         chooseFunction(editor,0);saveEditor(editor)
          compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,6)
          compare(_ohdSystemAirSettingsModel.assignments.MCS_VIA_RC,0)
          var writes=_ohdSystemAirSettingsModel.writes
          compare(writes[writes.length-2].id,"MCS_VIA_RC")
          compare(writes[writes.length-2].value,0)
-         editor=openEditor(6);chooseFunction(editor,-1);editor.apply()
+         editor=openEditor(6);chooseFunction(editor,-1);saveEditor(editor)
          compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,0)
      }
      function test_channel_popup_only_reads_fc_channel(){
          var before=loader.item.mapping.join(","), editor=openEditor(4)
          compare(findChild(editor.contentItem,"channelInput"),null)
          compare(findChild(editor.contentItem,"channelDetectInput"),null)
-         chooseFunction(editor,2);editor.apply()
+         chooseFunction(editor,2);saveEditor(editor)
          compare(_ohdSystemAirSettingsModel.assignments.TXMODE_VIA_RC,4)
          compare(loader.item.mapping.join(","),before)
          compare(_ohdSystemGroundSettings.lastId,"")
@@ -758,11 +806,11 @@ Item {
      function test_replacing_function_partial_save_can_retry(){
          var editor=openEditor(3)
          chooseFunction(editor,1)
-         _ohdSystemAirSettingsModel.rejectId="MCS_VIA_RC";editor.apply()
-         verify(editor.opened);verify(editor.savedChanges);compare(editor.error,"Rejected")
+         _ohdSystemAirSettingsModel.rejectId="MCS_VIA_RC";saveEditor(editor)
+         verify(editor.opened);verify(editor.savedChanges);verify(editor.error.indexOf("Could not save") >= 0)
          compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,0)
          compare(_ohdSystemAirSettingsModel.assignments.MCS_VIA_RC,8)
-         _ohdSystemAirSettingsModel.rejectId="";editor.apply()
+         _ohdSystemAirSettingsModel.rejectId="";saveEditor(editor)
          tryCompare(editor,"opened",false)
          compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,0)
          compare(_ohdSystemAirSettingsModel.assignments.MCS_VIA_RC,3)

@@ -308,7 +308,7 @@ MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_string_
 void MavlinkSettingsModel::try_set_param_int_async(const QString param_id, int value,bool log_result)
 {
     if (m_simulation) { emit parameterWriteFinished(param_id, setSimulationValue(param_id, value)); return; }
-    if (QOpenHD::instance().debugMenuPreview()) return;
+    if (QOpenHD::instance().debugMenuPreview()) { emit parameterWriteFinished(param_id, false); return; }
     if(m_is_currently_busy){
         qDebug()<<"BUSY";
         finalize_update_param(param_id,static_cast<int32_t>(value),false,log_result);
@@ -337,13 +337,14 @@ void MavlinkSettingsModel::try_set_param_int_async(const QString param_id, int v
            }, Qt::QueuedConnection);
        }
     };
-    XParam::instance().try_set_param_async(command,imp_cb,nullptr,std::chrono::milliseconds(300),10);
+    if (!XParam::instance().try_set_param_async(command,imp_cb,nullptr,std::chrono::milliseconds(300),10))
+        imp_cb(XParam::SetParamResult{});
 }
 
 void MavlinkSettingsModel::try_set_param_string_async(const QString param_id,QString value,bool log_result)
 {
     if (m_simulation) { emit parameterWriteFinished(param_id, setSimulationValue(param_id, value)); return; }
-    if (QOpenHD::instance().debugMenuPreview()) return;
+    if (QOpenHD::instance().debugMenuPreview()) { emit parameterWriteFinished(param_id, false); return; }
     if(m_is_currently_busy){
         qDebug()<<"BUSY";
         finalize_update_param(param_id,value.toStdString(),false,log_result);
@@ -373,7 +374,8 @@ void MavlinkSettingsModel::try_set_param_string_async(const QString param_id,QSt
             }, Qt::QueuedConnection);
         }
      };
-     XParam::instance().try_set_param_async(command,imp_cb,nullptr,std::chrono::milliseconds(300),10);
+     if (!XParam::instance().try_set_param_async(command,imp_cb,nullptr,std::chrono::milliseconds(300),10))
+         imp_cb(XParam::SetParamResult{});
 }
 
 QVariantMap MavlinkSettingsModel::backup_parameters() const
