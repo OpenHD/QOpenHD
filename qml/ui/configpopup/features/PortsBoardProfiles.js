@@ -87,6 +87,27 @@ var a7sAux = [
 ]
 
 
+// Physical pin numbers. These are available functions, separate from live mux routes.
+function pinFunction(art, pin) {
+    if (art === "pi4") {
+        return ({
+            3: "I²C SDA", 5: "I²C SCL", 8: "UART TX", 10: "UART RX",
+            12: "PCM CLK / PWM0", 19: "SPI MOSI", 21: "SPI MISO", 23: "SPI SCLK",
+            24: "SPI CE0", 26: "SPI CE1", 27: "ID EEPROM SDA", 28: "ID EEPROM SCL",
+            32: "PWM0", 33: "PWM1", 35: "PCM FS / PWM1", 38: "PCM DIN", 40: "PCM DOUT"
+        })[pin] || ""
+    }
+    if (art === "a7s" || art === "a7z") {
+        return ({
+            3: "UART3 RX", 5: "UART3 TX", 7: "UART2 / UART0 TX",
+            8: "UART0 TX", 10: "UART0 RX", 11: "UART2 / UART0 RX",
+            13: "S-UART0 TX", 15: "S-UART0 RX", 16: "UART4 TX", 18: "UART4 RX",
+            27: "UART3 RX", 28: "UART3 TX"
+        })[pin] || ""
+    }
+    return ""
+}
+
 function board(name, chip, brand, art, pins, aux) {
     return {name: name, chip: chip, brand: brand, art: art, pins: pins || [], aux: aux || []}
 }

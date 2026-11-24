@@ -95,6 +95,10 @@ MapSettingsCard {
     readonly property bool sideBySide: contentWidth >= 650
     readonly property int rowPitch: sideBySide ? Math.min(22, Math.floor(contentWidth * 0.41 * boardArt.headerPitch / 298)) : 24
     readonly property real artScale: sideBySide ? rowPitch / boardArt.headerPitch : 0
+    function functionForPin(pin) {
+        return Boards.pinFunction(profile.art, pin)
+    }
+
     readonly property var focusedAssignment: highlights[inspectedPin] || null
 
     onProfileChanged: inspectedPin = 0
@@ -172,6 +176,7 @@ MapSettingsCard {
                             readonly property bool odd: pin % 2 === 1
                             readonly property var assignment: root.highlights[pin] || null
                             readonly property string pinName: root.pinNames[index]
+                            readonly property string alternate: root.functionForPin(pin)
                             readonly property color pinColor: assignment ? assignment.color :
                                 pinName === "GND" ? settings_form.secondaryText :
                                 pinName.indexOf(" V") >= 0 ? "#d89c52" : settings_form.lineColor
@@ -190,6 +195,7 @@ MapSettingsCard {
                             rightInset: 0
                             hoverEnabled: true
                             Accessible.name: qsTr("Pin %1, %2").arg(pin).arg(pinName) +
+                                (alternate ? ", " + qsTr("Alternate function: %1").arg(alternate) : "") +
                                 (assignment ? ", " + assignment.label + " " + assignment.signal : "")
                             onClicked: root.inspectedPin = root.inspectedPin === pin ? 0 : pin
                             onActiveFocusChanged: if (activeFocus) root.pinFocused(pinButton)
@@ -232,7 +238,8 @@ MapSettingsCard {
                                 Text {
                                     Layout.fillWidth: true
                                     Layout.minimumWidth: 0
-                                    text: pinButton.assignment ? pinButton.assignment.signal + " · " + pinButton.assignment.label : pinButton.pinName
+                                    text: pinButton.assignment ? pinButton.assignment.signal + " · " + pinButton.assignment.label
+                                                               : pinButton.pinName + (pinButton.alternate ? " · " + pinButton.alternate : "")
                                     horizontalAlignment: pinButton.odd ? Text.AlignRight : Text.AlignLeft
                                     elide: Text.ElideRight
                                     color: pinButton.assignment && settings_form.darkMode ? pinButton.pinColor : settings_form.secondaryText
@@ -306,6 +313,7 @@ MapSettingsCard {
         Layout.fillWidth: true
         visible: root.inspectedPin > 0
         text: root.inspectedPin ? qsTr("Pin %1 · %2").arg(root.inspectedPin).arg(root.pinNames[root.inspectedPin - 1]) +
+              (root.functionForPin(root.inspectedPin) ? " · " + root.functionForPin(root.inspectedPin) : "") +
               (root.focusedAssignment ? " · " + root.focusedAssignment.label + " " + root.focusedAssignment.signal : "") : ""
         color: settings_form.primaryText
         font.family: Typography.family

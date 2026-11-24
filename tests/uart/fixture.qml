@@ -359,6 +359,18 @@ Item {
          compare(board.highlights[18].signal,"TX")
          compare(board.pinNames[25],"GPIO4_D1")
      }
+     function test_raspberry_pin_functions_are_not_live_assignments(){
+         _ohdSystemAir.ohd_platform_type=11
+         var board=findChild(loader.item,"portsBoardPinout")
+         compare(board.functionForPin(8),"UART TX")
+         compare(board.functionForPin(10),"UART RX")
+         compare(board.functionForPin(23),"SPI SCLK")
+         compare(board.highlights[8],undefined)
+         compare(board.highlights[10],undefined)
+         _ohdSystemAir.ohd_platform_type=32
+         compare(board.functionForPin(16),"UART4 TX")
+         compare(board.functionForPin(18),"UART4 RX")
+     }
      function test_gpio_highlights_use_physical_pins(){
          _ohdSystemAir.ohd_platform_type=11
          _ohdSystemAirSettingsModel.values.GPIO_2=1
