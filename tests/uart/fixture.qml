@@ -294,7 +294,7 @@ Item {
          compare(board.platform,11)
          verify(board.title.indexOf("Pi 4") >= 0)
          _ohdSystemGround.ohd_platform_type=12
-         compare(findChild(loader.item,"portsBoardPinout"),null)
+         tryVerify(function(){return findChild(loader.item,"portsBoardPinout") === null})
      }
      function test_gpio_highlights_use_physical_pins(){
          _ohdSystemAir.ohd_platform_type=11
