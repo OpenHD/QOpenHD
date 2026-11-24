@@ -68,18 +68,18 @@ Item {
    settings_form.showDeveloperSettings=false
    compare(air.parameterIds.length,0);compare(ground.parameterIds.length,0)
   }
-  function test_sbus_settings_are_developer_only(){
+  function test_sbus_settings_moved_to_ports(){
    var air=findChild(page,"debugAirPage")
    _ohdSystemAirSettingsModel.values={SBUS_EN:0,SBUS_DEV:"UART3",SBUS_HZ:50};_ohdSystemAirSettingsModel.update_count++
-   compare(air.parameterIds.join(","),"SBUS_DEV,SBUS_EN,SBUS_HZ")
+   compare(air.parameterIds.length,0)
    settings_form.showDeveloperSettings=false;compare(air.parameterIds.length,0)
   }
-  function test_air_ground_uart_link_is_developer_only(){
+  function test_air_ground_uart_link_moved_to_ports(){
    var air=findChild(page,"debugAirPage"),ground=findChild(page,"debugGroundPage")
    var values={OHD_UART_EN:0,OHD_UART_TLM:"UART2",OHD_UART_BAUD:115200,OHD_UART_FLW:0,UART_PRI_RC:3,UART_PRI_OHD:2,UART_PRI_FC:1}
    _ohdSystemAirSettingsModel.values=values;_ohdSystemAirSettingsModel.update_count++
    _ohdSystemGroundSettings.values=values;_ohdSystemGroundSettings.update_count++
-   compare(air.parameterIds.length,7);compare(ground.parameterIds.length,7)
+   compare(air.parameterIds.length,0);compare(ground.parameterIds.length,0)
    settings_form.showDeveloperSettings=false;settings_form.showAdvancedSettings=true
    compare(air.parameterIds.length,0);compare(ground.parameterIds.length,0)
   }

@@ -102,20 +102,8 @@ Item {
  }
  function test_categories_and_live_controls(){
  compare(panel.activeCategory,"fc")
- compare(panel.idsForSection("fcSerial").join(","),"FC_UART_CONN,FC_UART_BAUD,FC_UART_FLWCTL")
  verify(findChild(panel,"airSection_battery")!==null)
  verify(findChild(panel,"airSection_fcInfo")!==null)
- mouseClick(findChild(panel,"airCategory_peripherals"));compare(panel.activeCategory,"peripherals")
- var port=findChild(panel,"airSetting_FC_UART_CONN");verify(port!==null)
- var baud=findChild(panel,"airSetting_FC_UART_BAUD");baud.commitChoice(115200)
- compare(_ohdSystemAirSettingsModel.values.FC_UART_BAUD,115200)
- var flow=findChild(panel,"airSetting_FC_UART_FLWCTL");flow.commitToggle(true)
- compare(_ohdSystemAirSettingsModel.values.FC_UART_FLWCTL,1)
- compare(findChild(panel,"airSetting_SBUS_EN"),null)
- _qopenhd.debugMenuPreview=true
- var writes=_ohdSystemAirSettingsModel.writes
- flow.commitToggle(false);compare(_ohdSystemAirSettingsModel.writes,writes)
- _qopenhd.debugMenuPreview=false
  panel.activeCategory="expert";settings_form.showAdvancedSettings=false
  compare(panel.activeCategory,"fc");verify(panel.categories.every(function(c) { return panel.categoryCount(c.id) > 0 }))
  settings_form.showAdvancedSettings=true
@@ -126,22 +114,22 @@ Item {
  var developer=settings_form.showDeveloperSettings
  settings_form.showAdvancedSettings=true
  settings_form.showDeveloperSettings=false
- _ohdSystemAirSettingsModel.values={FC_BATT_N_CELLS:3,FC_UART_BAUD:115200}
+ _ohdSystemAirSettingsModel.values={FC_BATT_N_CELLS:3,LOG_OPENHD:1}
  _ohdSystemAirSettingsModel.update_count++
- compare(panel.categories.map(function(c){return c.id}).join(","),"fc,peripherals")
- panel.activeCategory="peripherals"
+ compare(panel.categories.map(function(c){return c.id}).join(","),"fc,system")
+ panel.activeCategory="system"
  _ohdSystemAirSettingsModel.values={FC_BATT_N_CELLS:3}
  _ohdSystemAirSettingsModel.update_count++
  compare(panel.activeCategory,"fc")
- compare(findChild(panel,"airCategory_peripherals"),null)
+ compare(findChild(panel,"airCategory_system"),null)
  _ohdSystemAirSettingsModel.values={}
  _ohdSystemAirSettingsModel.update_count++
  compare(panel.categories.length,0)
  compare(panel.activeCategory,"")
  panel.gainFocus()
- _ohdSystemAirSettingsModel.values={FC_UART_BAUD:115200}
+ _ohdSystemAirSettingsModel.values={LOG_OPENHD:1}
  _ohdSystemAirSettingsModel.update_count++
- compare(panel.activeCategory,"peripherals")
+ compare(panel.activeCategory,"system")
  settings_form.showAdvancedSettings=advanced
  settings_form.showDeveloperSettings=developer
  _ohdSystemAirSettingsModel.values=original
@@ -266,29 +254,20 @@ Item {
  verify(AirLayout.visibleInMode(retransmission[j],true,true))
  }
  }
- function test_uart_fc_normal_and_link_developer_only(){
- var advanced=settings_form.showAdvancedSettings
- settings_form.showAdvancedSettings=false;panel.activeCategory="peripherals";wait(30)
- compare(panel.sectionsForCategory("peripherals").map(function(s){return s.id}).join(","),"fcSerial,gpio")
- compare(panel.sectionsForCategory("peripherals")[0].title,"Flight-controller MAVLink")
- compare(findChild(panel,"airSetting_OHD_UART_EN"),null)
- settings_form.showAdvancedSettings=true;wait(30)
- compare(panel.sectionsForCategory("peripherals").map(function(s){return s.id}).join(","),"fcSerial,gpio")
- compare(findChild(panel,"airSection_telemetry"),null)
- settings_form.showDeveloperSettings=true
- compare(panel.idsForSection("telemetry").length,0)
- settings_form.showDeveloperSettings=false
- compare(panel.validateUart("FC_UART_CONN","UART2").length>0,true)
- compare(panel.validateUart("OHD_UART_TLM","UART1").length>0,true)
- compare(panel.validateUart("OHD_UART_EN",0),"")
- settings_form.showAdvancedSettings=advanced
+ function test_ports_have_a_dedicated_page(){
+ var ids = ["FC_UART_CONN", "TRACKER_UART_OUT", "OHD_UART_EN", "GPIO_2", "SBUS_EN"]
+ ids.forEach(function(id) {
+     compare(AirLayout.dedicatedPage(id), "Ports")
+     verify(panel.parameterIds.indexOf(id) < 0)
+     verify(groundPanel.parameterIds.indexOf(id) < 0)
+ })
  }
  function test_narrow_and_offline(){
- scene.width=480;panel.activeCategory="peripherals";wait(50)
+ scene.width=480;panel.activeCategory="system";wait(50)
  verify(panel.width<480)
  _ohdSystemAir.is_alive=false
- var flow=findChild(panel,"airSetting_FC_UART_FLWCTL");verify(flow.busy)
- var writes=_ohdSystemAirSettingsModel.writes;flow.commitToggle(false)
+ var logging=findChild(panel,"airSetting_LOG_OPENHD");verify(logging.busy)
+ var writes=_ohdSystemAirSettingsModel.writes;logging.commitToggle(false)
  compare(_ohdSystemAirSettingsModel.writes,writes)
  _ohdSystemAir.is_alive=true;scene.width=1000
  }

@@ -216,7 +216,7 @@ Item {
             compare(parentTabs.tabIsAvailable(3), false)
             compare(parentTabs.tabIsAvailable(4), false)
             params.ids = ["FC_UART_CONN"]; params.update_count++
-            compare(parentTabs.tabIsAvailable(3), true)
+            compare(parentTabs.tabIsAvailable(3), false)
             params.ids = ["FC_BATT_N_CELLS"]; params.update_count++
             compare(parentTabs.tabIsAvailable(3), true)
             parentTabs.currentPage = 3

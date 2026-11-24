@@ -108,7 +108,6 @@ AdvancedPage {
                            _ohdSystemGroundSettings.param_int_exists("WB_UDP_ENABLE")
                 }
             }
-            AdvancedTabButton { text: qsTr("UART"); iconText: "\uf120" }
             AdvancedTabButton { text: qsTr("FLEETCONTROL"); iconText: "\uf0c0" }
         }
 
@@ -482,7 +481,6 @@ AdvancedPage {
                 }
             }
 
-            UartSettingsPanel {}
             FleetControlSettingsPanel {
                 onBackRequested: root.backRequested()
             }

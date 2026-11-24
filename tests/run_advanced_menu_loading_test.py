@@ -25,7 +25,7 @@ def main():
     pages = {
         "status/PanelStatus.qml", "openhd_settings/OHDSettingsPanel.qml",
         "qopenhd_settings/AppSettingsPanel.qml", "qopenhd_settings/OsdSettingsPanel.qml", "log/LogMessagesStatusView.qml",
-        "features/JoystickPage.qml", "connect/ConnectPanel.qml", "credits/Credits.qml",
+        "features/JoystickPage.qml", "features/PortsSettingsPanel.qml", "connect/ConnectPanel.qml", "credits/Credits.qml",
         "dev/MavlinkDebugPanel.qml", "dev/AppDeveloperStatsPanel.qml",
     }
     stub = '''import QtQuick 2.12
@@ -55,6 +55,19 @@ Item {
     Loader { id: menu; anchors.fill: parent; source: "ConfigPopup.qml" }
     TestCase {
         name: "AdvancedMenuLoading"; when: windowShown
+        function test_ports_sidebar_entry() {
+            var component = Qt.createComponent("ConfigPopup.qml")
+            var root = component.createObject(menu.parent)
+            var navigation = findChild(root, "advancedNavigation")
+            var index = root.navigationPageIds.indexOf(11)
+            verify(index >= 0)
+            navigation.positionViewAtIndex(index, ListView.Contain)
+            tryVerify(function() { return findChild(root, "navigationPage11") !== null })
+            mouseClick(findChild(root, "navigationPage11"))
+            compare(root.menuPageTitle, "PORTS")
+            tryCompare(root, "currentPageReady", true)
+            root.destroy()
+        }
         function test_settings_back_touch_target() {
             tryCompare(menu, "status", Loader.Ready)
             var root = menu.item
@@ -290,7 +303,7 @@ Item {
         for name in pages:
             path = folder / name
             path.parent.mkdir(exist_ok=True)
-            valid = name.startswith("status/") or name.endswith(("OHDSettingsPanel.qml", "AppDeveloperStatsPanel.qml", "JoystickPage.qml"))
+            valid = name.startswith("status/") or name.endswith(("OHDSettingsPanel.qml", "AppDeveloperStatsPanel.qml", "JoystickPage.qml", "PortsSettingsPanel.qml"))
             path.write_text(stub if valid else "import QtQuick 2.12\nDeliberatelyMissingType {}\n", encoding="utf-8")
         shutil.copy(menu_dir / "status/StatusOverviewHeader.qml", folder / "status/StatusOverviewHeader.qml")
         (folder / "tst_menu.qml").write_text(test, encoding="utf-8")

@@ -224,13 +224,14 @@ function visibleInMode(id, advanced, developer) {
  return reviewDecisions[id] !== "ADVANCED" || advanced
 }
 
-// These Air-provided parameters are presented by their dedicated Extras pages.
-function isUartParameter(id) {
+// Port parameters are presented by the Ports sidebar page.
+function isPortParameter(id) {
  return ["FC_UART_CONN","FC_UART_BAUD","FC_UART_FLWCTL","TRACKER_UART_OUT","TRACK_UART_BAUD","TRACK_UART_FLOW",
-         "OHD_UART_EN","OHD_UART_TLM","OHD_UART_BAUD","OHD_UART_FLW","UART_PRI_RC","UART_PRI_OHD","UART_PRI_FC"].indexOf(id)>=0
+         "OHD_UART_EN","OHD_UART_TLM","OHD_UART_BAUD","OHD_UART_FLW","UART_PRI_RC","UART_PRI_OHD","UART_PRI_FC",
+         "SBUS_EN","SBUS_DEV","SBUS_HZ","GPIO_2","GPIO_26"].indexOf(id)>=0
 }
 function isEthernetParameter(id) { return id === "ETHERNET" || id.indexOf("ETH_") === 0 }
-function belongsToExtras(id) { return id === "ENABLE_JOY_RC" || id === "RC_CHAN_MAP" || id === "JOY_MAP_V2" || id === "JOY_MONITOR" || (isUartParameter(id) && !isAirUartParameter(id)) || id === "ADSB_ENABLE" || id.indexOf("AUDIO_") === 0 || id.indexOf("AUD_") === 0 }
+function belongsToExtras(id) { return id === "ENABLE_JOY_RC" || id === "RC_CHAN_MAP" || id === "JOY_MAP_V2" || id === "JOY_MONITOR" || id === "ADSB_ENABLE" || id.indexOf("AUDIO_") === 0 || id.indexOf("AUD_") === 0 }
 
 // UI ownership is separate from the Air component that supplies the parameters.
 // Dedicated controls have one home, including Link settings.
@@ -246,11 +247,9 @@ var dedicatedPages = {
  "AR_CHN_MD":"Link", "AR_CHN_IDX":"Link", "AR_PWR_ATO":"Link", "AR_PWR_DBM":"Link",
  "RC_OHD_CTRL":"Extras", "RC_SET_BASE":"Extras", "WB_DEV_LOGS":"Extras"
 }
-function isFcUartParameter(id) { return ["FC_UART_CONN","FC_UART_BAUD","FC_UART_FLWCTL"].indexOf(id)>=0 }
-function isAirUartParameter(id) { return isFcUartParameter(id) || ["OHD_UART_EN","OHD_UART_TLM","OHD_UART_BAUD","OHD_UART_FLW","UART_PRI_RC","UART_PRI_OHD","UART_PRI_FC"].indexOf(id)>=0 }
 function dedicatedPage(id) {
  if(id.indexOf("TX_POWER_") === 0) return "Link"
- if(isAirUartParameter(id)) return "Air"
+ if(isPortParameter(id)) return "Ports"
  if(belongsToExtras(id) || id.indexOf("WB_UDP_") === 0) return "Extras"
  return dedicatedPages[id] || ""
 }
@@ -263,7 +262,6 @@ function isLinkRecoveryParameter(id) {
 function belongsInAir(id, advanced) {
  if(hiddenSetting(id) || id === "ESP_ANALYSE")return false
  if(["CONFIG_BOOT_AIR","FC_FW_EVID","SYS_DISP_FORCE","SYS_DISP_MODE","SYS_PLATFORM","BOARD_TYPE"].indexOf(id)>=0 || isHardwareDiagnostic(id))return false
- if(isAirUartParameter(id))return true
  if(isEthernetParameter(id))return !!advanced
  return dedicatedPage(id).length === 0
 }

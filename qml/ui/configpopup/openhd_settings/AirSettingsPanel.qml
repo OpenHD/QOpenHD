@@ -66,15 +66,6 @@ FocusScope {
     }
     readonly property var rfCodingIds: ["WB_E_STBC", "WB_E_LDPC", "WB_E_SHORT_GUARD"]
     function refresh() { if(!preview && root.systemModel.is_alive && !settingsModel.ui_is_busy) settingsModel.ensure_parameters_available() }
-    function validateUart(id, value) {
-        if (["FC_UART_CONN","OHD_UART_TLM","OHD_UART_EN"].indexOf(id) < 0) return ""
-        function port(key) { return key === id ? String(value).trim() : settingsModel.param_string_exists(key) ? settingsModel.get_cached_string(key) : "" }
-        var enabled = id === "OHD_UART_EN" ? Number(value) !== 0 : settingsModel.param_int_exists("OHD_UART_EN") && settingsModel.get_cached_int("OHD_UART_EN") !== 0
-        if (enabled && !port("OHD_UART_TLM")) return qsTr("Choose a UART port before enabling the Air-Ground link.")
-        var fc = port("FC_UART_CONN"), link = port("OHD_UART_TLM")
-        if (enabled && fc && fc !== "DEFAULT" && fc === link) return qsTr("Flight-controller MAVLink and the Air-Ground link need separate UART ports.")
-        return ""
-    }
     function ensureActiveCategory() {
         for (var i = 0; i < categories.length; ++i)
             if (categories[i].id === activeCategory) return
@@ -238,8 +229,6 @@ FocusScope {
                                             width: parent.width; paramId: modelData; settingsModel: root.settingsModel
                                             connectionAlive: root.systemModel.is_alive
                                             stacked: sectionCard.section.id === "rcRadio"
-                                            validateChange: root.validateUart
-                                            onValidationFailed: function(reason) { _messageBoxInstance.set_text_and_show(reason) }
                                             onBackRequested: root.gainFocus()
                                         }
                                     }

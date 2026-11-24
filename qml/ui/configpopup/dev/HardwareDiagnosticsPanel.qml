@@ -23,7 +23,7 @@ Flickable {
      // Some identifiers are hidden from the generic list but still available to dedicated controls.
      var known=AirLayout.knownAirIds.concat(AirLayout.developerParameters)
      for(var i=0;i<known.length;i++)if(ids.indexOf(known[i])<0&&(settingsModel.param_int_exists(known[i])||settingsModel.param_string_exists(known[i])))ids.push(known[i])
-     return ids.filter(function(id){return AirLayout.isHardwareDiagnostic(id)}).sort()
+     return ids.filter(function(id){return !AirLayout.isPortParameter(id) && AirLayout.isHardwareDiagnostic(id)}).sort()
  }
  ColumnLayout {
      id:body;width:root.width;spacing:10

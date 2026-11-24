@@ -5,7 +5,7 @@ import ".."
 import "../MenuTypography.js" as Typography
 import "AirSettingsLayout.js" as AirLayout
 
-Item {
+FocusScope {
     id: row
     objectName: "airSetting_" + paramId
     property bool stacked: false
@@ -25,7 +25,7 @@ Item {
     readonly property bool busy: settingsModel.ui_is_busy || !connectionAlive || _qopenhd.debugMenuPreview
     readonly property bool toggle: integer && (metadata.control === "toggle" || ["ETH_LINK_EN", "FC_UART_FLWCTL", "OHD_UART_EN", "OHD_UART_FLW", "TRACK_UART_FLOW", "LOG_OPENHD", "LOG_MAVLINK", "ADSB_ENABLE", "SBUS_EN", "CONFIG_BOOT_AIR"].indexOf(paramId) >= 0)
     readonly property bool port: ["FC_UART_CONN", "OHD_UART_TLM", "SBUS_DEV", "TRACKER_UART_OUT"].indexOf(paramId) >= 0
-    readonly property bool portFallback: port && !settingsModel.string_param_has_enum(paramId)
+    readonly property bool hasPortChoices: { revision; return port && settingsModel.string_param_has_enum(paramId) }
     readonly property bool cells: paramId === "FC_BATT_N_CELLS"
     readonly property var choices: {
         if (cells) {
@@ -34,8 +34,19 @@ Item {
             if(entries.filter(function(e) { return e.value === Number(value) }).length === 0) entries.push({label: value + "S", value: Number(value)})
             return entries
         }
+        if (!port) return []
         var ports = [{label: qsTr("Disabled"), value: ""}, {label: qsTr("Board default"), value: "DEFAULT"}]
-        if(String(value) !== "" && String(value) !== "DEFAULT") ports.push({label: String(value), value: String(value)})
+        if (hasPortChoices) {
+            var keys = settingsModel.string_param_get_enum_keys(paramId)
+            var values = settingsModel.string_param_get_enum_values(paramId)
+            for (var i = 0; i < values.length; ++i) {
+                if (values[i] && values[i] !== "DEFAULT")
+                    ports.push({label: keys[i], value: values[i]})
+            }
+        }
+        var current = String(value)
+        if (!ports.some(function(entry) { return entry.value === current }))
+            ports.push({label: current, value: current})
         ports.push({label: qsTr("Custom port..."), value: null})
         return ports
     }
@@ -55,7 +66,9 @@ Item {
         if (paramId === "MULTI_LINK_CAP") return Number(value) ? qsTr("Supported") : qsTr("Not supported")
         return String(value)
     }
-    implicitHeight: stacked ? wording.implicitHeight + editor.height + 26 : Math.max(60, wording.implicitHeight + 18, editor.height + 18)
+    readonly property real editorWidth: stacked ? width : Math.min(215, width * 0.43)
+    readonly property real editorHeight: infoOnly && editor.item ? Math.max(36, editor.item.implicitHeight) : 36
+    implicitHeight: stacked ? wording.implicitHeight + editorHeight + 26 : Math.max(60, wording.implicitHeight + 18, editorHeight + 18)
     signal backRequested()
     function changeAllowed(value) {
         if (!validateChange) return true
@@ -80,26 +93,24 @@ Item {
         else settingsModel.try_set_param_string_async(paramId, String(selected), true)
     }
 
-    Column {
+    Text {
         id: wording
-        anchors.left: parent.left
-        anchors.verticalCenter: row.stacked ? undefined : parent.verticalCenter
-        anchors.top: row.stacked ? parent.top : undefined
-        anchors.topMargin: row.stacked ? 8 : 0
-        width: row.stacked ? row.width : Math.max(0, row.width - editor.width - 12)
-        spacing: 3
-        Text { width: parent.width; text: row.label; color: settings_form.primaryText; font.family: Typography.family; font.pixelSize: Typography.body; font.bold: true; wrapMode: Text.Wrap }
-
+        y: row.stacked ? 8 : (row.height - height) / 2
+        width: row.stacked ? row.width : Math.max(0, row.width - row.editorWidth - 12)
+        text: row.label
+        color: settings_form.primaryText
+        font.family: Typography.family
+        font.pixelSize: Typography.body
+        font.bold: true
+        wrapMode: Text.Wrap
     }
     Loader {
         id: editor
-        anchors.right: parent.right
-        anchors.verticalCenter: row.stacked ? undefined : parent.verticalCenter
-        anchors.top: row.stacked ? wording.bottom : undefined
-        anchors.topMargin: row.stacked ? 8 : 0
-        width: row.stacked ? row.width : Math.min(215, row.width * 0.43)
-        height: row.infoOnly && item ? Math.max(36, item.implicitHeight) : 36
-        sourceComponent: row.infoOnly ? informationControl : row.toggle ? toggleControl : row.cells || row.portFallback ? choiceControl : row.password ? passwordControl : inlineControl
+        x: row.width - width
+        y: row.stacked ? wording.y + wording.height + 8 : (row.height - height) / 2
+        width: row.editorWidth
+        height: row.editorHeight
+        sourceComponent: row.infoOnly ? informationControl : row.toggle ? toggleControl : row.cells || row.port ? choiceControl : row.password ? passwordControl : inlineControl
     }
     Component {
         id: informationControl
@@ -112,10 +123,22 @@ Item {
     Component {
         id: choiceControl
         CompactLinkComboBox {
+            id: choiceEditor
+            objectName: row.port ? "portChoiceEditor" : ""
             model: row.choices.map(function(entry) { return entry.label })
-            currentIndex: { for(var i=0;i<row.choices.length;i++) if(String(row.choices[i].value) === String(row.value)) return i; return -1 }
+            currentIndex: valueIndex()
             enabled: !row.locked && !row.busy
-            onActivated: if(currentIndex >= 0) row.commitChoice(row.choices[currentIndex].value)
+            Accessible.name: row.label
+
+            function valueIndex() {
+                return row.choices.findIndex(function(entry) {
+                    return entry.value !== null && String(entry.value) === String(row.value)
+                })
+            }
+            onActivated: function(index) {
+                row.commitChoice(row.choices[index].value)
+                currentIndex = Qt.binding(choiceEditor.valueIndex)
+            }
         }
     }
     Component {
@@ -139,7 +162,11 @@ Item {
             objectName: "airToggle_" + row.paramId
             checked: Number(row.value) !== 0
             enabled: !row.locked && !row.busy
-            onToggled: row.commitToggle(checked)
+            onToggled: {
+                row.commitToggle(checked)
+                if (row.validateChange)
+                    checked = Qt.binding(function() { return Number(row.value) !== 0 })
+            }
             Accessible.name: row.label
             indicator: Rectangle {
                 implicitWidth: 38; implicitHeight: 22
