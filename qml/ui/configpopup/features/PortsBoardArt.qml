@@ -6,8 +6,9 @@ Item {
     property var highlights: ({})
     property int inspectedPin: 0
     property real alignedScale: 0
-    readonly property real drawingScale: alignedScale > 0 ? alignedScale : Math.min(width / 298, height / 426)
-    readonly property real canvasTop: alignedScale > 0 ? 8 : (height - drawingScale * 426) / 2
+    readonly property int drawingHeight: board.art === "a7s" ? 365 : 426
+    readonly property real drawingScale: alignedScale > 0 ? alignedScale : Math.min(width / 298, height / drawingHeight)
+    readonly property real canvasTop: alignedScale > 0 ? 8 : (height - drawingScale * drawingHeight) / 2
     readonly property real headerStart: 66
     readonly property real headerPitch: 15
 
@@ -194,17 +195,17 @@ Item {
                 if (art === "rock5b")
                     metal(152, 330, 43, 34, "#27384d")
             } else if (art === "a7s") {
-                metal(164, 37, 83, 53, "#ad8652")
-                metal(208, 113, 54, 53, "#2b6d95")
-                metal(226, 199, 40, 35, "#344d64")
-                metal(226, 247, 40, 35, "#344d64")
+                metal(50, 295, 65, 45, "#ad8652")
+                metal(124, 299, 42, 38, "#2b6d95")
+                metal(175, 304, 34, 31, "#344d64")
+                metal(219, 304, 34, 31, "#344d64")
                 chip(99, 106, 97, 76, board.chip, board.brand, true)
                 chip(110, 213, 82, 47, "LPDDR5", "", false)
-                box(84, 289, 110, 14, 3, "#d6d5bc", ink, 3)
+                box(236, 80, 15, 109, 3, "#d6d5bc", ink, 3)
                 for (var auxPin = 0; auxPin < board.aux.length; ++auxPin)
-                    dot(90 + auxPin * 7, 296, 2.3, "#ffd578", ink, 1)
-                text("1", 89, 315, 9, "#ffffff")
-                text(String(board.aux.length), 188, 315, 9, "#ffffff")
+                    dot(243, 86 + auxPin * 7, 2.3, "#ffd578", ink, 1)
+                text("1", 243, 74, 9, "#ffffff")
+                text(String(board.aux.length), 243, 202, 9, "#ffffff")
             } else if (schematic) {
                 if (pixelBoard) {
                     metal(229, 156, 38, 86, "#3c657e")

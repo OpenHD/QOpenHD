@@ -118,7 +118,7 @@ MapSettingsCard {
             Layout.fillWidth: true
             Layout.preferredWidth: 220
             Layout.minimumWidth: 0
-            Layout.preferredHeight: root.hasPinout && root.sideBySide ? root.artScale * 426 + 16 : root.hasPinout ? 220 : 150
+            Layout.preferredHeight: root.hasPinout && root.sideBySide ? root.artScale * boardArt.drawingHeight + 16 : root.hasPinout ? 220 : 150
             Layout.alignment: Qt.AlignTop
             alignedScale: root.hasPinout ? root.artScale : 0
             board: root.profile
@@ -273,15 +273,19 @@ MapSettingsCard {
             font.bold: true
         }
 
-        Flow {
+        GridLayout {
             Layout.fillWidth: true
-            spacing: 6
+            Layout.preferredWidth: 0
+            columns: Math.max(1, Math.min(root.auxPins.length, Math.floor(root.contentWidth / 58)))
+            rowSpacing: 5
+            columnSpacing: 5
 
             Repeater {
                 model: root.auxPins
                 Rectangle {
-                    width: auxLabel.implicitWidth + 14
-                    height: 24
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 53
+                    Layout.preferredHeight: 24
                     color: settings_form.pageBackground
                     border.color: settings_form.lineColor
                     radius: 5
