@@ -107,9 +107,11 @@ MapSettingsCard {
     readonly property bool sideBySide: hasPinout && !compactView && fittedRowPitch >= 14
     readonly property int rowPitch: sideBySide ? fittedRowPitch : 26
     readonly property real artScale: sideBySide ? rowPitch / boardArt.geometry.header.pitch : 0
-    readonly property real compactHeight: Math.max(134, Math.min(245, Math.floor(viewportHeight - 94)))
-    readonly property real previewHeight: compactBesideArt ? compactHeight
-        : compactView ? Math.max(105, Math.min(170, Math.floor(viewportHeight * 0.42))) : 190
+    readonly property real stackedPreviewHeight: Math.max(72, Math.min(140, Math.floor(viewportHeight * 0.32)))
+    readonly property real compactHeight: compactBesideArt
+        ? Math.max(134, Math.min(245, Math.floor(viewportHeight - 94)))
+        : Math.max(102, Math.min(196, Math.floor(viewportHeight - stackedPreviewHeight - 66)))
+    readonly property real previewHeight: compactBesideArt ? compactHeight : compactView ? stackedPreviewHeight : 190
     readonly property int compactArtWidth: Math.round(Math.min(250, contentWidth * 0.34))
     readonly property var focusedAssignment: highlights[inspectedPin] || null
     readonly property int firstAssignedPin: {
@@ -236,6 +238,8 @@ MapSettingsCard {
                 interactive: root.compactView && contentHeight > height
                 boundsBehavior: Flickable.StopAtBounds
                 flickableDirection: Flickable.VerticalFlick
+                onHeightChanged: if (root.compactView)
+                    Qt.callLater(root.revealPin, root.inspectedPin || root.firstAssignedPin, true)
                 onMovementEnded: {
                     var row = Math.round(contentY / root.rowPitch)
                     contentY = Math.max(0, Math.min(contentHeight - height, row * root.rowPitch))

@@ -442,6 +442,26 @@ Item {
          compare(board.inspectedPin,40)
          verify(findChild(art,"portsBoardMarker40").visible)
      }
+     function test_stacked_pinout_keeps_active_rows_visible(){
+         scene.width=336
+         scene.height=340
+         _ohdSystemAir.ohd_platform_type=20
+         _ohdSystemAirSettingsModel.values.FC_UART_CONN="/dev/ttyS4"
+         _ohdSystemAirSettingsModel.headerRoutes={"/dev/ttyS4":{rx:16,tx:18}}
+         _ohdSystemAirSettingsModel.update_count++
+         var board=findChild(loader.item,"portsBoardPinout")
+         var art=findChild(board,"portsBoardArt")
+         var pins=findChild(board,"portsPinList")
+         var viewport=findChild(loader.item,"portsScrollView")
+         tryCompare(art,"imageReady",true)
+         verify(board.compactView && !board.compactBesideArt)
+         tryVerify(function(){return pins.contentY > 0})
+         var rx=findChild(board,"portsHeaderPin16")
+         var tx=findChild(board,"portsHeaderPin18")
+         tryVerify(function(){
+             return rx.mapToItem(viewport,0,0).y >= 0 && tx.mapToItem(viewport,0,tx.height).y <= viewport.height
+         })
+     }
      function test_gpio_highlights_use_physical_pins(){
          _ohdSystemAir.ohd_platform_type=11
          _ohdSystemAirSettingsModel.values.GPIO_2=1
