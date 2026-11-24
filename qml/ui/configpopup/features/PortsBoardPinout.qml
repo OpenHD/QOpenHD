@@ -104,7 +104,6 @@ MapSettingsCard {
     onProfileChanged: inspectedPin = 0
     onAirChanged: inspectedPin = 0
     title: hasPinout ? qsTr("%1 · Pinout").arg(profile.name) : profile.name
-    headerNote: air ? qsTr("Air") : qsTr("Ground")
     icon: "\uf2db"
     compact: true
 

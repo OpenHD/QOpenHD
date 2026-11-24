@@ -38,7 +38,6 @@ MapSettingsCard {
     compact: true
     title: section.title
     subtitle: link ? qsTr("Use the same baud rate on Air and Ground.") : ""
-    headerNote: air ? qsTr("Air") : qsTr("Ground")
     icon: section.icon
 
     Text {
