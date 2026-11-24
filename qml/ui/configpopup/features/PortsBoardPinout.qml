@@ -90,6 +90,9 @@ MapSettingsCard {
         }
         return result
     }
+    readonly property bool sideBySide: contentWidth >= 650
+    readonly property int rowPitch: sideBySide ? Math.min(22, Math.floor(contentWidth * 0.41 * boardArt.headerPitch / 298)) : 24
+    readonly property real artScale: sideBySide ? rowPitch / boardArt.headerPitch : 0
     readonly property var focusedAssignment: highlights[inspectedPin] || null
 
     onPlatformChanged: inspectedPin = 0
@@ -103,16 +106,19 @@ MapSettingsCard {
         Layout.fillWidth: true
         Layout.minimumWidth: 0
         Layout.preferredWidth: 0
-        columns: root.contentWidth >= 520 ? 2 : 1
+        columns: root.sideBySide ? 2 : 1
         columnSpacing: 20
         rowSpacing: 10
 
         PortsBoardArt {
+            id: boardArt
+            objectName: "portsBoardArt"
             Layout.fillWidth: true
             Layout.preferredWidth: 220
             Layout.minimumWidth: 0
-            Layout.preferredHeight: parent.columns === 1 ? 190 : 428
-            Layout.alignment: Qt.AlignVCenter
+            Layout.preferredHeight: root.sideBySide ? root.artScale * 426 + 16 : 220
+            Layout.alignment: Qt.AlignTop
+            alignedScale: root.artScale
             platform: root.platform
             highlights: root.highlights
             inspectedPin: root.inspectedPin
@@ -122,6 +128,7 @@ MapSettingsCard {
             Layout.fillWidth: true
             Layout.preferredWidth: 315
             Layout.minimumWidth: 0
+            Layout.alignment: Qt.AlignTop
             implicitHeight: headerColumn.implicitHeight + 20
             color: settings_form.pageBackground
             border.color: settings_form.lineColor
@@ -136,6 +143,7 @@ MapSettingsCard {
 
                 Text {
                     Layout.fillWidth: true
+                    id: headerTitle
                     text: qsTr("GPIO header · 2 × 20")
                     color: settings_form.primaryText
                     font.family: Typography.family
@@ -146,8 +154,11 @@ MapSettingsCard {
 
                 GridLayout {
                     Layout.fillWidth: true
+                    Layout.topMargin: root.sideBySide
+                        ? Math.max(0, boardArt.pinCenterY(1) - headerColumn.y -
+                                   headerTitle.implicitHeight - headerColumn.spacing - root.rowPitch / 2) : 0
                     columns: 2
-                    columnSpacing: 4
+                    columnSpacing: 9
                     rowSpacing: 1
 
                     Repeater {
@@ -166,7 +177,9 @@ MapSettingsCard {
                             Layout.fillWidth: true
                             Layout.minimumWidth: 0
                             Layout.preferredWidth: 1
-                            implicitHeight: 23
+                            Layout.preferredHeight: root.rowPitch - 1
+                            Layout.minimumHeight: Layout.preferredHeight
+                            Layout.maximumHeight: Layout.preferredHeight
                             padding: 2
                             topInset: 0
                             bottomInset: 0

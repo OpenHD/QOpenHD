@@ -282,6 +282,22 @@ Item {
          _ohdSystemGround.is_alive=false
          compare(Object.keys(board.highlights).length,0)
      }
+     function test_board_and_chart_share_pin_rows(){
+         for (var i=0; i<3; ++i) {
+             _ohdSystemAir.ohd_platform_type=[20,11,13][i]
+             var board=findChild(loader.item,"portsBoardPinout")
+             var art=findChild(board,"portsBoardArt")
+             wait(50)
+             verify(board.sideBySide)
+             for (var number=1; number<=40; ++number) {
+                 var pin=findChild(board,"portsHeaderPin"+number)
+                 var chartY=pin.mapToItem(board, pin.width / 2, pin.height / 2).y
+                 var boardY=art.mapToItem(board, 0, art.pinCenterY(number)).y
+                 verify(Math.abs(chartY-boardY) <= 1, "Pin " + number + " at " + chartY + " vs " + boardY)
+                 compare(pin.odd,number % 2 === 1)
+             }
+         }
+     }
      function test_board_art_matches_selected_unit(){
          _ohdSystemAir.ohd_platform_type=20
          _ohdSystemGround.ohd_platform_type=13
