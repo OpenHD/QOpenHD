@@ -6,7 +6,8 @@ Item {
     property var highlights: ({})
     property int inspectedPin: 0
     property real alignedScale: 0
-    readonly property int drawingHeight: board.art === "a7s" ? 365 : 426
+    readonly property int drawingHeight: board.art === "a7s" ? 365
+        : ["pi3", "pi4", "pi5"].indexOf(board.art) >= 0 ? 442 : 426
     readonly property real drawingScale: alignedScale > 0 ? alignedScale : Math.min(width / 298, height / drawingHeight)
     readonly property real canvasTop: alignedScale > 0 ? 8 : (height - drawingScale * drawingHeight) / 2
     readonly property real headerStart: 66
@@ -118,6 +119,7 @@ Item {
             var y0 = narrow ? 21 : 31
             var y1 = narrow ? 402 : 378
             if (art === "a7s") y1 = 326
+            if (root.drawingHeight === 442) y1 = 391
             if (schematic) {
                 x0 = art === "pico" ? 73 : 30
                 x1 = art === "pico" ? 225 : 268
@@ -227,11 +229,11 @@ Item {
                 if (art !== "pi3") metal(13, 163, 35, 30, "#304050")
                 if (!pi5) metal(11, 255, 43, 36, "#151b22")
                 var pi4 = art === "pi4"
-                metal(50, pi4 ? 337 : 328, pi4 ? 56 : 61, pi4 ? 56 : 65, pi4 ? "#292c3a" : "#bd944e")
-                metal(117, 337, 53, 54, art === "pi3" ? "#292c3a" : "#1c7bba")
-                metal(183, pi4 ? 328 : 337, pi4 ? 63 : 53, pi4 ? 65 : 56, pi4 ? "#bd944e" : "#292c3a")
+                metal(50, pi4 ? 367 : 361, pi4 ? 56 : 61, pi4 ? 54 : 60, pi4 ? "#292c3a" : "#bd944e")
+                metal(117, 367, 53, 54, art === "pi3" ? "#292c3a" : "#1c7bba")
+                metal(183, pi4 ? 361 : 367, pi4 ? 63 : 53, pi4 ? 60 : 54, pi4 ? "#bd944e" : "#292c3a")
                 chip(93, 107, 93, 76, board.chip, board.brand, true)
-                chip(93, 207, 63, 43, pi5 ? "RP1" : "LPDDR4", "", false)
+                chip(pi5 ? 93 : 121, 207, 63, 43, pi5 ? "RP1" : pi4 ? "LPDDR4" : "RAM", "", false)
                 if (pi5) {
                     box(59, 204, 15, 29, 3, "#e9e9d7", ink, 3)
                     box(59, 243, 15, 29, 3, "#e9e9d7", ink, 3)
