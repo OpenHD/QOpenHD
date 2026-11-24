@@ -12,22 +12,22 @@ AdvancedPage {
 
     property string validationError: ""
     readonly property bool editingAir: unitTabs.currentIndex === 0
-    readonly property var cardRows: [
-        [{id: "fc", title: qsTr("Flight controller telemetry"), air: true, icon: "\uf1d8", groups: [
+    readonly property var sections: ({
+        fc: {id: "fc", title: qsTr("Flight controller telemetry"), icon: "\uf1d8", groups: [
             {rows: [
                 ["FC_UART_CONN", qsTr("Port"), "\uf1e6"],
                 ["FC_UART_BAUD", qsTr("Baud rate"), "\uf3fd"],
                 ["FC_UART_FLWCTL", qsTr("RTS/CTS flow control")]
             ]}
         ]},
-        {id: "tracker", title: qsTr("Tracker output"), air: false, icon: "\uf05b", groups: [
+        tracker: {id: "tracker", title: qsTr("Tracker output"), icon: "\uf05b", groups: [
             {rows: [
                 ["TRACKER_UART_OUT", qsTr("Port"), "\uf1e6"],
                 ["TRACK_UART_BAUD", qsTr("Baud rate"), "\uf3fd"],
                 ["TRACK_UART_FLOW", qsTr("RTS/CTS flow control")]
             ]}
-        ]}],
-        [{id: "link", title: qsTr("UART Link (Air ↔ Ground)"), icon: "\uf0c1", groups: [
+        ]},
+        link: {id: "link", title: qsTr("UART Link (Air ↔ Ground)"), icon: "\uf0c1", groups: [
             {columns: true, rows: [
                 ["OHD_UART_TLM", qsTr("Port"), "\uf1e6"],
                 ["OHD_UART_BAUD", qsTr("Baud rate"), "\uf3fd"],
@@ -39,18 +39,27 @@ AdvancedPage {
                 ["UART_PRI_FC", qsTr("FC telemetry priority")]
             ]},
             {rows: [["OHD_UART_FLW", qsTr("RTS/CTS flow control")]]}
-        ]}],
-        [{id: "sbus", title: qsTr("SBUS output"), air: true, icon: "\uf11b", groups: [
+        ]},
+        sbus: {id: "sbus", title: qsTr("SBUS output"), icon: "\uf11b", groups: [
             {rows: [
                 ["SBUS_DEV", qsTr("Port"), "\uf1e6"],
                 ["SBUS_HZ", qsTr("Update rate (Hz)"), "\uf3fd"],
                 ["SBUS_EN", qsTr("Enable output")]
             ]}
         ]},
-        {id: "gpio", title: qsTr("GPIO outputs"), air: true, icon: "\uf2db", groups: [
+        gpio: {id: "gpio", title: qsTr("GPIO outputs"), icon: "\uf2db", groups: [
             {rows: [["GPIO_2", qsTr("GPIO 2")], ["GPIO_26", qsTr("GPIO 26")]]}
-        ]}]
-    ]
+        ]}
+    })
+
+    readonly property var cardRows: {
+        var rows = editingAir ? [[sections.fc, sections.gpio]] : [[sections.tracker]]
+        if (settings_form.showAdvancedSettings) {
+            rows.push([sections.link])
+            if (editingAir) rows.push([sections.sbus])
+        }
+        return rows
+    }
 
     function requestSettings(system, model) {
         if (visible && system.is_alive && !_qopenhd.debugMenuPreview)
@@ -110,7 +119,10 @@ AdvancedPage {
             implicitHeight: Typography.controlHeight + 4
             spacing: 0
             padding: 1
-            onCurrentIndexChanged: root.validationError = ""
+            onCurrentIndexChanged: {
+                root.validationError = ""
+                if (portList) portList.contentY = 0
+            }
             Keys.onLeftPressed: focusUnit(0)
             Keys.onRightPressed: focusUnit(1)
 
@@ -203,7 +215,7 @@ AdvancedPage {
                                     id: card
                                     width: (cardGrid.width - cardGrid.columnSpacing * (cardGrid.columns - 1)) / cardGrid.columns
                                     section: modelData
-                                    air: link ? root.editingAir : section.air
+                                    air: root.editingAir
                                     params: air ? _ohdSystemAirSettingsModel : _ohdSystemGroundSettings
                                     connected: air ? _ohdSystemAir.is_alive : _ohdSystemGround.is_alive
                                     validateChange: function(id, value) { return root.validatePort(card.air, card.params, id, value) }
