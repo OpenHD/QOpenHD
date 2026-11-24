@@ -61,6 +61,7 @@ Item {
             var navigation = findChild(root, "advancedNavigation")
             var index = root.navigationPageIds.indexOf(11)
             verify(index >= 0)
+            compare(root.navigationPageIds[index + 1], 4)
             navigation.positionViewAtIndex(index, ListView.Contain)
             tryVerify(function() { return findChild(root, "navigationPage11") !== null })
             mouseClick(findChild(root, "navigationPage11"))
