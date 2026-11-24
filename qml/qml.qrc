@@ -155,6 +155,7 @@ https://github.com/OpenHD
         <file>ui/configpopup/qopenhd_settings/AudioRuleCard.qml</file>
         <file>ui/configpopup/features/FeatureSettingsPanel.qml</file>
         <file>ui/configpopup/features/PortsSettingsPanel.qml</file>
+        <file>ui/configpopup/features/PortsSettingsCard.qml</file>
         <file>ui/configpopup/features/JoystickPage.qml</file>
         <file>ui/configpopup/features/ChannelOverview.qml</file>
         <file>ui/configpopup/features/ChannelRangeEditor.qml</file>

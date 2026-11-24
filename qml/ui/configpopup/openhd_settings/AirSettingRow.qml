@@ -9,6 +9,9 @@ FocusScope {
     id: row
     objectName: "airSetting_" + paramId
     property bool stacked: false
+    property bool compact: false
+    property bool showSeparator: true
+    property string labelIcon: ""
     property var settingsModel
     property var validateChange: null
     signal validationFailed(string reason)
@@ -66,9 +69,14 @@ FocusScope {
         if (paramId === "MULTI_LINK_CAP") return Number(value) ? qsTr("Supported") : qsTr("Not supported")
         return String(value)
     }
-    readonly property real editorWidth: stacked ? width : Math.min(215, width * 0.43)
-    readonly property real editorHeight: infoOnly && editor.item ? Math.max(36, editor.item.implicitHeight) : 36
-    implicitHeight: stacked ? wording.implicitHeight + editorHeight + 26 : Math.max(60, wording.implicitHeight + 18, editorHeight + 18)
+    readonly property real labelInset: labelIcon ? 20 : 0
+    readonly property real fieldSpacing: compact ? 5 : 8
+    readonly property real verticalPadding: compact ? 4 : 8
+    readonly property real editorWidth: stacked ? width : compact ? Math.round(width * 0.46) : Math.min(215, width * 0.43)
+    readonly property real editorHeight: infoOnly && editor.item ? Math.max(36, editor.item.implicitHeight) : compact ? 32 : 36
+    implicitHeight: stacked
+        ? wording.implicitHeight + fieldSpacing + editorHeight + verticalPadding * 2 + (compact ? 0 : 2)
+        : Math.max(compact ? 40 : 60, Math.max(wording.implicitHeight, editorHeight) + (compact ? 8 : 18))
     signal backRequested()
     function changeAllowed(value) {
         if (!validateChange) return true
@@ -94,20 +102,32 @@ FocusScope {
     }
 
     Text {
+        visible: row.labelIcon !== ""
+        y: wording.y + (Math.min(wording.height, Typography.body + 3) - height) / 2
+        width: row.labelInset
+        text: row.labelIcon
+        font.family: "Font Awesome 5 Free"
+        font.pixelSize: Typography.controlIcon
+        color: settings_form.accentColor
+    }
+    Text {
         id: wording
-        y: row.stacked ? 8 : (row.height - height) / 2
-        width: row.stacked ? row.width : Math.max(0, row.width - row.editorWidth - 12)
+        objectName: row.compact ? "portRowLabel" : ""
+        x: row.labelInset
+        y: row.stacked ? row.verticalPadding : (row.height - height) / 2
+        width: Math.max(0, row.width - x - (row.stacked ? 0 : row.editorWidth + 12))
         text: row.label
         color: settings_form.primaryText
         font.family: Typography.family
         font.pixelSize: Typography.body
-        font.bold: true
+        font.bold: !row.compact
         wrapMode: Text.Wrap
     }
     Loader {
         id: editor
+        objectName: row.compact ? "portRowEditor" : ""
         x: row.width - width
-        y: row.stacked ? wording.y + wording.height + 8 : (row.height - height) / 2
+        y: row.stacked ? wording.y + wording.height + row.fieldSpacing : (row.height - height) / 2
         width: row.editorWidth
         height: row.editorHeight
         sourceComponent: row.infoOnly ? informationControl : row.toggle ? toggleControl : row.cells || row.port ? choiceControl : row.password ? passwordControl : inlineControl
@@ -124,6 +144,8 @@ FocusScope {
         id: choiceControl
         CompactLinkComboBox {
             id: choiceEditor
+            compact: row.compact
+            popupWidth: Math.max(width, row.compact ? 176 : 240)
             objectName: row.port ? "portChoiceEditor" : ""
             model: row.choices.map(function(entry) { return entry.label })
             currentIndex: valueIndex()
@@ -151,6 +173,8 @@ FocusScope {
             displayValue: row.displayValue
             readOnly: row.locked
             busy: row.busy
+            compact: row.compact
+            preferStepper: row.compact && row.paramId.indexOf("UART_PRI_") === 0
             minimumOverride: row.paramId === "SBUS_HZ" ? 1 : undefined
             maximumOverride: row.paramId === "SBUS_HZ" ? 200 : undefined
         }
@@ -169,13 +193,15 @@ FocusScope {
             }
             Accessible.name: row.label
             indicator: Rectangle {
-                implicitWidth: 38; implicitHeight: 22
-                x: toggleEditor.width - width; y: (toggleEditor.height - height) / 2
+                implicitWidth: row.compact ? 36 : 38; implicitHeight: row.compact ? 20 : 22
+                x: row.compact && row.stacked ? 0 : toggleEditor.width - width; y: (toggleEditor.height - height) / 2
                 radius: 11
                 color: toggleEditor.checked ? settings_form.accentColor : settings_form.lineColor
                 opacity: toggleEditor.enabled ? 1 : 0.5
+                border.width: row.compact && toggleEditor.visualFocus ? 1 : 0
+                border.color: settings_form.accentColor
                 Rectangle {
-                    width: 18; height: 18; radius: 9; y: 2
+                    width: parent.height - 4; height: width; radius: width / 2; y: 2
                     x: toggleEditor.checked ? parent.width - width - 2 : 2
                     color: "white"
                 }
@@ -195,7 +221,7 @@ FocusScope {
             background: Rectangle { radius: 7; color: settings_form.panelBackgroundRaised; border.color: parent.activeFocus ? settings_form.accentColor : settings_form.lineColor }
         }
     }
-    Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: settings_form.lineColor }
+    Rectangle { visible: row.showSeparator; anchors.bottom: parent.bottom; width: parent.width; height: 1; color: settings_form.lineColor }
     Keys.onEscapePressed: backRequested()
     AdvancedDialog {
         id: customPortDialog

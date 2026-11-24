@@ -12,8 +12,10 @@ ComboBox {
     property color outlineColor: "#33485d"
     property color focusColor: "#278cff"
     property int popupWidth: Math.max(width, 240)
-    readonly property real preferredTextWidth: selectedLabel.implicitWidth + leftPadding + rightPadding + 32
+    readonly property real preferredTextWidth: selectedLabel.implicitWidth + leftPadding + rightPadding + iconSpacing
     property real popupScale: 1
+    property bool compact: false
+    readonly property int iconSpacing: compact ? 21 : 32
     // Callers can supply explanatory metadata without changing value models.
     property var optionDetails: []
     property string optionIcon: "\uf1de"
@@ -36,11 +38,11 @@ ComboBox {
         popup.open()
     }
 
-    Keys.onReturnPressed: {
+    Keys.onReturnPressed: function(event) {
         control.openForKeyboard()
         event.accepted = true
     }
-    Keys.onEnterPressed: {
+    Keys.onEnterPressed: function(event) {
         control.openForKeyboard()
         event.accepted = true
     }
@@ -48,12 +50,12 @@ ComboBox {
     implicitHeight: MenuTypography.controlHeight
     topInset: 0; bottomInset: 0; leftInset: 0; rightInset: 0
     hoverEnabled: true
-    leftPadding: 12
-    rightPadding: 36
+    leftPadding: compact ? 9 : 12
+    rightPadding: compact ? 27 : 36
     font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
 
     contentItem: Item {
-        implicitWidth: selectedLabel.implicitWidth + 34
+        implicitWidth: selectedLabel.implicitWidth + control.iconSpacing + 2
         Text {
             anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
             text: control.detail(control.currentIndex).icon || control.optionIcon
@@ -62,7 +64,7 @@ ComboBox {
         }
         Text {
             id: selectedLabel
-            anchors.left: parent.left; anchors.leftMargin: 32
+            anchors.left: parent.left; anchors.leftMargin: control.iconSpacing
             anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
             text: control.displayText
             color: control.enabled ? control.textColor : control.mutedColor
@@ -72,7 +74,7 @@ ComboBox {
     }
 
     indicator: Text {
-        x: control.width - width - 13
+        x: control.width - width - (control.compact ? 10 : 13)
         anchors.verticalCenter: parent.verticalCenter
         text: control.popup.visible ? "\uf077" : "\uf078"
         color: control.enabled && (control.hovered || control.activeFocus)
@@ -97,6 +99,7 @@ ComboBox {
             ? (Array.isArray(control.model) ? modelData[control.textRole] : model[control.textRole]) : modelData)
         width: ListView.view ? ListView.view.width : control.popupWidth - 16
         height: MenuTypography.controlHeight
+        Binding on padding { when: control.compact; value: 0 }
         hoverEnabled: true
         highlighted: hovered || (control.popup.visible && popupList.currentIndex === index)
         contentItem: Item {
@@ -107,7 +110,7 @@ ComboBox {
                 font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.rowIcon
             }
             Column {
-                x: 38; width: Math.max(0, parent.width - 66)
+                x: control.compact ? 31 : 38; width: Math.max(0, parent.width - x - 26)
                 anchors.verticalCenter: parent.verticalCenter; spacing: 2
                 Text { width: parent.width; text: option.label; color: control.textColor; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; elide: Text.ElideRight }
             }
@@ -119,7 +122,7 @@ ComboBox {
             }
         }
         background: Rectangle {
-            radius: 10
+            radius: control.compact ? 6 : 10
             color: control.currentIndex === index ? "#0b3b62" : (option.highlighted ? "#183449" : "transparent")
         }
     }
@@ -170,7 +173,7 @@ ComboBox {
         }
         onClosed: control.forceActiveFocus()
         background: Rectangle {
-            radius: 14
+            radius: control.compact ? MenuTypography.controlRadius : 14
             color: control.popupColor
             border.color: control.outlineColor
             border.width: 1
@@ -186,7 +189,7 @@ ComboBox {
             keyNavigationWraps: true
             highlightMoveDuration: 0
             ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
-            Keys.onReturnPressed: {
+            Keys.onReturnPressed: function(event) {
                 if (currentIndex >= 0) {
                     control.currentIndex = currentIndex
                     control.activated(currentIndex)
@@ -194,7 +197,7 @@ ComboBox {
                 }
                 event.accepted = true
             }
-            Keys.onEnterPressed: {
+            Keys.onEnterPressed: function(event) {
                 if (currentIndex >= 0) {
                     control.currentIndex = currentIndex
                     control.activated(currentIndex)
@@ -202,12 +205,12 @@ ComboBox {
                 }
                 event.accepted = true
             }
-            Keys.onEscapePressed: {
+            Keys.onEscapePressed: function(event) {
                 dropdownPopup.close()
                 event.accepted = true
             }
-            Keys.onLeftPressed: event.accepted = true
-            Keys.onRightPressed: event.accepted = true
+            Keys.onLeftPressed: function(event) { event.accepted = true }
+            Keys.onRightPressed: function(event) { event.accepted = true }
         }
     }
 }

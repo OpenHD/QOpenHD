@@ -2,48 +2,54 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import ".."
-import "../qopenhd_settings"
-import "../openhd_settings"
 import "../MenuTypography.js" as Typography
 
 AdvancedPage {
     id: root
     objectName: "portsSettingsPanel"
-    initialFocusItem: portList
+    initialFocusItem: unitTabs.currentItem
     onBackRequested: settings_form.side_bar_regain_focus()
 
     property string validationError: ""
-    readonly property var linkRows: [
-        ["OHD_UART_TLM", qsTr("Port")],
-        ["OHD_UART_BAUD", qsTr("Baud rate")],
-        ["OHD_UART_FLW", qsTr("RTS/CTS flow control")],
-        ["OHD_UART_EN", qsTr("Enable link")],
-        ["UART_PRI_RC", qsTr("RC priority")],
-        ["UART_PRI_OHD", qsTr("OpenHD priority")],
-        ["UART_PRI_FC", qsTr("FC telemetry priority")]
-    ]
-    readonly property var sections: [
-        {id: "fc", title: qsTr("Flight controller telemetry"), air: true, icon: "\uf1d8", rows: [
-            ["FC_UART_CONN", qsTr("Port")],
-            ["FC_UART_BAUD", qsTr("Baud rate")],
-            ["FC_UART_FLWCTL", qsTr("RTS/CTS flow control")]
+    readonly property bool editingAir: unitTabs.currentIndex === 0
+    readonly property var cardRows: [
+        [{id: "fc", title: qsTr("Flight controller telemetry"), air: true, icon: "\uf1d8", groups: [
+            {rows: [
+                ["FC_UART_CONN", qsTr("Port"), "\uf1e6"],
+                ["FC_UART_BAUD", qsTr("Baud rate"), "\uf3fd"],
+                ["FC_UART_FLWCTL", qsTr("RTS/CTS flow control")]
+            ]}
         ]},
-        {id: "tracker", title: qsTr("Tracker output"), air: false, icon: "\uf124", rows: [
-            ["TRACKER_UART_OUT", qsTr("Port")],
-            ["TRACK_UART_BAUD", qsTr("Baud rate")],
-            ["TRACK_UART_FLOW", qsTr("RTS/CTS flow control")]
+        {id: "tracker", title: qsTr("Tracker output"), air: false, icon: "\uf05b", groups: [
+            {rows: [
+                ["TRACKER_UART_OUT", qsTr("Port"), "\uf1e6"],
+                ["TRACK_UART_BAUD", qsTr("Baud rate"), "\uf3fd"],
+                ["TRACK_UART_FLOW", qsTr("RTS/CTS flow control")]
+            ]}
+        ]}],
+        [{id: "link", title: qsTr("UART Link (Air ↔ Ground)"), icon: "\uf0c1", groups: [
+            {columns: true, rows: [
+                ["OHD_UART_TLM", qsTr("Port"), "\uf1e6"],
+                ["OHD_UART_BAUD", qsTr("Baud rate"), "\uf3fd"],
+                ["OHD_UART_EN", qsTr("Enable link")]
+            ]},
+            {columns: true, rows: [
+                ["UART_PRI_RC", qsTr("RC priority")],
+                ["UART_PRI_OHD", qsTr("OpenHD priority")],
+                ["UART_PRI_FC", qsTr("FC telemetry priority")]
+            ]},
+            {rows: [["OHD_UART_FLW", qsTr("RTS/CTS flow control")]]}
+        ]}],
+        [{id: "sbus", title: qsTr("SBUS output"), air: true, icon: "\uf11b", groups: [
+            {rows: [
+                ["SBUS_DEV", qsTr("Port"), "\uf1e6"],
+                ["SBUS_HZ", qsTr("Update rate (Hz)"), "\uf3fd"],
+                ["SBUS_EN", qsTr("Enable output")]
+            ]}
         ]},
-        {id: "airLink", title: qsTr("OpenHD UART link"), air: true, icon: "\uf519", rows: linkRows},
-        {id: "groundLink", title: qsTr("OpenHD UART link"), air: false, icon: "\uf519", rows: linkRows},
-        {id: "sbus", title: qsTr("SBUS output"), air: true, icon: "\uf11b", rows: [
-            ["SBUS_DEV", qsTr("Port")],
-            ["SBUS_HZ", qsTr("Update rate (Hz)")],
-            ["SBUS_EN", qsTr("Enable output")]
-        ]},
-        {id: "gpio", title: qsTr("GPIO outputs"), air: true, icon: "\uf2db", rows: [
-            ["GPIO_2", qsTr("GPIO 2")],
-            ["GPIO_26", qsTr("GPIO 26")]
-        ]}
+        {id: "gpio", title: qsTr("GPIO outputs"), air: true, icon: "\uf2db", groups: [
+            {rows: [["GPIO_2", qsTr("GPIO 2")], ["GPIO_26", qsTr("GPIO 26")]]}
+        ]}]
     ]
 
     function requestSettings(system, model) {
@@ -95,7 +101,50 @@ AdvancedPage {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 10
+        spacing: 12
+
+        TabBar {
+            id: unitTabs
+            objectName: "portsUnitTabs"
+            Layout.fillWidth: true
+            implicitHeight: Typography.controlHeight + 4
+            spacing: 0
+            padding: 1
+            onCurrentIndexChanged: root.validationError = ""
+            Keys.onLeftPressed: focusUnit(0)
+            Keys.onRightPressed: focusUnit(1)
+
+            function focusUnit(index) {
+                setCurrentIndex(index)
+                itemAt(index).forceActiveFocus()
+            }
+
+            contentItem: ListView {
+                model: unitTabs.contentModel
+                currentIndex: unitTabs.currentIndex
+                orientation: ListView.Horizontal
+                interactive: false
+            }
+            background: Rectangle {
+                radius: Typography.controlRadius
+                color: settings_form.panelBackground
+                border.color: settings_form.lineColor
+            }
+            AdvancedTabButton {
+                width: unitTabs.availableWidth / 2
+                height: unitTabs.availableHeight
+                underlined: true
+                text: qsTr("Air Unit")
+                iconText: "\uf1d8"
+            }
+            AdvancedTabButton {
+                width: unitTabs.availableWidth / 2
+                height: unitTabs.availableHeight
+                underlined: true
+                text: qsTr("Ground Unit")
+                iconText: "\uf519"
+            }
+        }
 
         Text {
             Layout.fillWidth: true
@@ -107,94 +156,62 @@ AdvancedPage {
             wrapMode: Text.Wrap
         }
 
-        Flickable {
-            id: portList
+        Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            contentWidth: width
-            contentHeight: cards.implicitHeight
-            boundsBehavior: Flickable.StopAtBounds
-            clip: true
-            ScrollBar.vertical: ScrollBar {}
 
-            GridLayout {
-                id: cards
-                width: portList.width
-                columns: width >= 720 ? 2 : 1
-                columnSpacing: 12
-                rowSpacing: 12
+            Flickable {
+                id: portList
+                anchors.fill: parent
+                contentWidth: width
+                contentHeight: cards.implicitHeight
+                boundsBehavior: Flickable.StopAtBounds
+                clip: true
+                ScrollBar.vertical: ScrollBar {
+                    parent: portList.parent
+                    anchors.left: portList.right
+                    anchors.leftMargin: 2
+                    anchors.top: portList.top
+                    anchors.bottom: portList.bottom
+                }
 
-                Repeater {
-                    model: root.sections
-                    delegate: MapSettingsCard {
-                        id: card
-                        objectName: "portsSection_" + section.id
-                        readonly property var section: modelData
-                        readonly property var params: section.air ? _ohdSystemAirSettingsModel : _ohdSystemGroundSettings
-                        readonly property bool connected: section.air ? _ohdSystemAir.is_alive : _ohdSystemGround.is_alive
-                        readonly property var rows: {
-                            params.update_count
-                            return section.rows.filter(function(entry) {
-                                return params.param_int_exists(entry[0]) || params.param_string_exists(entry[0])
-                            })
-                        }
+                function reveal(item) {
+                    var top = item.mapToItem(cards, 0, 0).y
+                    if (top < contentY)
+                        contentY = top
+                    else if (top + item.height > contentY + height)
+                        contentY = top + item.height - height
+                }
 
-                        Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        Layout.preferredWidth: 1
-                        Layout.alignment: Qt.AlignTop
-                        title: section.title
-                        headerNote: section.air ? qsTr("Air") : qsTr("Ground")
-                        icon: section.icon
+                Column {
+                    id: cards
+                    width: portList.width
+                    spacing: 12
 
-                        Text {
-                            Layout.fillWidth: true
-                            visible: (!card.connected && !_qopenhd.debugMenuPreview) || !card.rows.length
-                            text: !card.connected && !_qopenhd.debugMenuPreview ? qsTr("Unit offline") :
-                                  card.params.ui_is_busy ? qsTr("Loading settings…") : qsTr("No settings reported")
-                            color: settings_form.secondaryText
-                            font.family: Typography.family
-                            font.pixelSize: Typography.helper
-                            wrapMode: Text.Wrap
-                        }
-                        Column {
-                            Layout.fillWidth: true
-                            Layout.minimumWidth: 0
-                            Layout.preferredWidth: 0
+                    Repeater {
+                        model: root.cardRows
+                        delegate: Grid {
+                            id: cardGrid
+                            width: cards.width
+                            columnSpacing: cards.spacing
+                            rowSpacing: cards.spacing
+                            columns: width >= 690 ? modelData.length : 1
 
                             Repeater {
-                                model: card.rows
-                                delegate: AirSettingRow {
-                                    objectName: "portSetting_" + card.section.id + "_" + paramId
-                                    width: parent.width
-                                    stacked: width < 300
-                                    settingsModel: card.params
-                                    connectionAlive: card.connected
-                                    paramId: modelData[0]
-                                    labelOverride: modelData[1]
-                                    validateChange: function(id, value) { return root.validatePort(card.section.air, card.params, id, value) }
+                                model: modelData
+                                delegate: PortsSettingsCard {
+                                    id: card
+                                    width: (cardGrid.width - cardGrid.columnSpacing * (cardGrid.columns - 1)) / cardGrid.columns
+                                    section: modelData
+                                    air: link ? root.editingAir : section.air
+                                    params: air ? _ohdSystemAirSettingsModel : _ohdSystemGroundSettings
+                                    connected: air ? _ohdSystemAir.is_alive : _ohdSystemGround.is_alive
+                                    validateChange: function(id, value) { return root.validatePort(card.air, card.params, id, value) }
                                     onValidationFailed: function(reason) { root.validationError = reason }
+                                    onSettingFocused: function(row) { portList.reveal(row) }
                                     onBackRequested: root.backRequested()
-                                    onActiveFocusChanged: {
-                                        if (!activeFocus) return
-                                        var top = mapToItem(cards, 0, 0).y
-                                        if (top < portList.contentY)
-                                            portList.contentY = top
-                                        else if (top + height > portList.contentY + portList.height)
-                                            portList.contentY = top + height - portList.height
-                                    }
                                 }
                             }
-                        }
-
-                        Text {
-                            Layout.fillWidth: true
-                            visible: section.id === "groundLink" && card.rows.length > 0
-                            text: qsTr("Use the same baud rate on Air and Ground.")
-                            color: settings_form.secondaryText
-                            font.family: Typography.family
-                            font.pixelSize: Typography.helper
-                            wrapMode: Text.Wrap
                         }
                     }
                 }

@@ -15,6 +15,7 @@ TabButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.b
             Qt.callLater(TabBar.tabBar.ensureAvailableTab)
     }
     property string iconText: ""
+    property bool underlined: false
     readonly property bool iconOnly: iconText.length > 0 && TabBar.tabBar && TabBar.tabBar.compactTabs === true
     readonly property real naturalWidth: Math.max(MenuTypography.controlMinWidth, label.implicitWidth + (iconText.length > 0 ? 26 : 0) + MenuTypography.controlPadding * 2)
     Accessible.name: text
@@ -36,7 +37,7 @@ TabButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.b
                 width: visible ? 18 : 0
                 height: Math.max(18, label.implicitHeight)
                 text: control.iconText
-                color: control.checked ? "white" : settings_form.secondaryText
+                color: control.checked ? (control.underlined ? settings_form.accentColor : "white") : settings_form.secondaryText
                 font.family: "Font Awesome 5 Free"
                 font.pixelSize: MenuTypography.controlIcon
                 horizontalAlignment: Text.AlignHCenter
@@ -48,7 +49,7 @@ TabButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.b
                 visible: !control.iconOnly
                 height: Math.max(18, implicitHeight)
                 text: control.text
-                color: control.checked ? "white" : settings_form.primaryText
+                color: control.checked ? (control.underlined ? settings_form.accentColor : "white") : settings_form.primaryText
                 font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                 font.bold: true
                 verticalAlignment: Text.AlignVCenter
@@ -57,9 +58,21 @@ TabButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.b
     }
     background: Rectangle {
         radius: MenuTypography.controlRadius
-        color: control.checked ? settings_form.accentColor
+        color: control.underlined
+               ? (control.checked || control.hovered ? settings_form.panelBackgroundRaised : "transparent")
+               : control.checked ? settings_form.accentColor
                                : (control.hovered ? settings_form.panelBackgroundRaised : settings_form.panelBackground)
-        border.width: control.activeFocus ? 2 : 1
+        border.width: control.activeFocus ? 2 : (control.underlined ? 0 : 1)
         border.color: control.activeFocus ? settings_form.accentColor : settings_form.lineColor
+        Rectangle {
+            visible: control.underlined && control.checked
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.margins: 2
+            height: 2
+            radius: 1
+            color: settings_form.accentColor
+        }
     }
 }

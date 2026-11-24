@@ -1,7 +1,7 @@
 import "../../elements"
 
 DarkComboBox {
-    panelColor: settings_form.panelBackground
+    panelColor: compact ? settings_form.panelBackgroundRaised : settings_form.panelBackground
     popupColor: settings_form.panelBackgroundRaised
     textColor: settings_form.primaryText
     mutedColor: settings_form.secondaryText

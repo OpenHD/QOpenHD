@@ -11,6 +11,8 @@ FocusScope {
     property string displayValue: ""
     property bool readOnly: false
     property bool busy: false
+    property bool compact: false
+    property bool preferStepper: false
     property var minimumOverride: undefined
     property var maximumOverride: undefined
     // Values which are documented globally but unsupported by the active hardware.
@@ -78,7 +80,7 @@ FocusScope {
         id: editorLoader
         anchors.fill: parent
         sourceComponent: root.readOnly ? readOnlyEditor
-                                      : (root.isInteger && root.paramId === "ETH_LINK_EN" ? ethernetToggleEditor : root.hasEnum ? enumEditor
+                                      : (root.isInteger && root.paramId === "ETH_LINK_EN" ? ethernetToggleEditor : root.hasEnum && !root.preferStepper ? enumEditor
                                                       : (root.isInteger ? integerEditor : stringEditor))
     }
 
@@ -110,11 +112,12 @@ FocusScope {
         id: enumEditor
         CompactLinkComboBox {
             objectName: "parameterEnumEditor"
+            compact: root.compact
             model: root.enumKeys
             currentIndex: root.valueIndex()
             displayText: currentIndex >= 0 ? String(root.enumKeys[currentIndex]) : root.displayValue
             enabled: !root.busy
-            popupWidth: Math.max(width, 260)
+            popupWidth: Math.max(width, root.compact ? 176 : 260)
             onActivated: function(index) {
                 if (index < 0 || index >= root.enumValues.length)
                     return
@@ -130,6 +133,7 @@ FocusScope {
         id: integerEditor
         SpinBox {
             id: spin
+            objectName: root.compact ? "portNumberEditor" : ""
             from: root.minimumOverride !== undefined ? Number(root.minimumOverride) : root.settingsModel.int_param_has_min_max(root.paramId)
                   ? root.settingsModel.int_param_get_min_value(root.paramId) : 0
             to: root.maximumOverride !== undefined ? Number(root.maximumOverride) : root.settingsModel.int_param_has_min_max(root.paramId)
@@ -142,6 +146,8 @@ FocusScope {
             textFromValue: function(value, locale) { return String(value) }
             valueFromText: function(text, locale) { return Number(text) }
             leftPadding: 28; rightPadding: 28
+            Binding on topPadding { when: root.compact; value: 0 }
+            Binding on bottomPadding { when: root.compact; value: 0 }
             contentItem: TextInput {
                 text: spin.textFromValue(spin.value, spin.locale)
                 font: spin.font; color: settings_form.primaryText
@@ -149,14 +155,18 @@ FocusScope {
                 readOnly: !spin.editable; validator: spin.validator
                 inputMethodHints: Qt.ImhFormattedNumbersOnly
             }
-            background: Rectangle { radius: 7; color: settings_form.panelBackground; border.color: spin.activeFocus ? settings_form.accentColor : settings_form.lineColor }
+            background: Rectangle {
+                radius: 7
+                color: root.compact ? settings_form.panelBackgroundRaised : settings_form.panelBackground
+                border.color: spin.activeFocus ? settings_form.accentColor : settings_form.lineColor
+            }
             up.indicator: Item {
                 x: spin.width - width; width: 28; height: spin.height
-                Text { anchors.centerIn: parent; text: "+"; color: spin.up.enabled ? settings_form.primaryText : settings_form.secondaryText; font.pixelSize: MenuTypography.sectionTitle }
+                Text { anchors.centerIn: parent; text: "+"; color: root.compact && spin.up.enabled ? settings_form.accentColor : spin.up.enabled ? settings_form.primaryText : settings_form.secondaryText; font.pixelSize: MenuTypography.sectionTitle }
             }
             down.indicator: Item {
                 width: 28; height: spin.height
-                Text { anchors.centerIn: parent; text: "-"; color: spin.down.enabled ? settings_form.primaryText : settings_form.secondaryText; font.pixelSize: MenuTypography.sectionTitle }
+                Text { anchors.centerIn: parent; text: root.compact ? "−" : "-"; color: root.compact && spin.down.enabled ? settings_form.accentColor : spin.down.enabled ? settings_form.primaryText : settings_form.secondaryText; font.pixelSize: MenuTypography.sectionTitle }
             }
         }
     }
