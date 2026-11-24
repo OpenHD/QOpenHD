@@ -200,6 +200,23 @@ AdvancedPage {
                     width: portList.width
                     spacing: 12
 
+                    Loader {
+                        id: boardLoader
+                        width: cards.width
+                        readonly property var unit: root.editingAir ? _ohdSystemAir : _ohdSystemGround
+                        active: unit.ohd_platform_type === 20 || unit.ohd_platform_type === 11
+                        visible: active
+                        sourceComponent: PortsBoardPinout {
+                            platform: boardLoader.unit.ohd_platform_type
+                            air: root.editingAir
+                            advanced: settings_form.showAdvancedSettings
+                            connected: boardLoader.unit.is_alive
+                            onPinFocused: function(item) { portList.reveal(item) }
+                            settingsModel: air ? _ohdSystemAirSettingsModel : _ohdSystemGroundSettings
+                            onBackRequested: root.backRequested()
+                        }
+                    }
+
                     Repeater {
                         model: root.cardRows
                         delegate: Grid {

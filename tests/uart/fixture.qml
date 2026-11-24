@@ -10,8 +10,8 @@ Item {
  FontLoader {source:"../../qml/resources/Font Awesome 5 Free-Solid-900.otf"}
  QtObject {id:settings_form;property real width:scene.width;property real height:scene.height;property bool darkMode:true;property bool compactSidebar:false;property color pageBackground:"#091827";function side_bar_regain_focus(){}property bool showAdvancedSettings:false;property bool showDeveloperSettings:false;property color errorColor:"#ff4e5d";property color primaryText:"white";property color secondaryText:"#aebdcb";property color accentColor:"#278cff";property color panelBackground:"#102235";property color panelBackgroundRaised:"#15283b";property color lineColor:"#26394c"}
  QtObject {id:_qopenhd;property bool debugMenuPreview:false}
- QtObject {id:_ohdSystemAir;property bool is_alive:true}
- QtObject {id:_ohdSystemGround;property bool is_alive:true}
+ QtObject {id:_ohdSystemAir;property bool is_alive:true; property int ohd_platform_type:-1}
+ QtObject {id:_ohdSystemGround;property bool is_alive:true; property int ohd_platform_type:-1}
  QtObject {id:_messageBoxInstance;function set_text_and_show(message){}}
  Component {
      id:paramModel
@@ -21,6 +21,7 @@ Item {
          property var values:({})
          property var detectedPorts: []
          property bool hasSerialScan: true
+         property var headerRoutes: ({})
          property int writes:0
          property string lastId:""
          property var lastValue:""
@@ -30,7 +31,7 @@ Item {
          function get_cached_string(id){return values[id]}
          function get_ui_metadata(id){
              return {label:id, description:"", readOnly:false, serialPortScan:hasSerialScan,
-                     keys:detectedPorts, values:detectedPorts}
+                     keys:detectedPorts, values:detectedPorts, serialHeaderRoutes:headerRoutes}
          }
          function string_param_has_enum(id){return false}
          function ensure_parameters_available(){}
@@ -71,6 +72,10 @@ Item {
          loader.active=false;settings_form.showAdvancedSettings=false;settings_form.showDeveloperSettings=false;_qopenhd.debugMenuPreview=false;_ohdSystemAir.is_alive=true;_ohdSystemGround.is_alive=true
          _ohdSystemAirSettingsModel.values={FC_UART_CONN:"/dev/ttyS1",FC_UART_BAUD:921600,FC_UART_FLWCTL:0,SBUS_EN:0,SBUS_DEV:"/dev/ttyS2",SBUS_HZ:50,GPIO_2:0,GPIO_26:0,OHD_UART_EN:0,OHD_UART_TLM:"/dev/ttyUSB0",OHD_UART_BAUD:115200,OHD_UART_FLW:0,UART_PRI_RC:3,UART_PRI_OHD:2,UART_PRI_FC:1}
          _ohdSystemGroundSettings.values={TRACKER_UART_OUT:"",TRACK_UART_BAUD:9600,TRACK_UART_FLOW:0,OHD_UART_EN:0,OHD_UART_TLM:"/dev/ttyUSB0",OHD_UART_BAUD:115200,OHD_UART_FLW:0,UART_PRI_RC:3,UART_PRI_OHD:2,UART_PRI_FC:1}
+         _ohdSystemAir.ohd_platform_type=-1
+         _ohdSystemGround.ohd_platform_type=-1
+         _ohdSystemAirSettingsModel.headerRoutes={}
+         _ohdSystemGroundSettings.headerRoutes={}
          _ohdSystemAirSettingsModel.hasSerialScan=true
          _ohdSystemGroundSettings.hasSerialScan=true
          _ohdSystemAirSettingsModel.detectedPorts=["/dev/ttyS1","/dev/ttyS2","/dev/ttyUSB0"]
@@ -246,6 +251,48 @@ Item {
          compare(section("sbus"),null)
          verify(section("fc") !== null)
          verify(section("gpio") !== null)
+     }
+     function test_board_pinout_follows_unit_settings(){
+         _ohdSystemAir.ohd_platform_type=20
+         _ohdSystemAirSettingsModel.headerRoutes={"/dev/ttyS4":{rx:16,tx:18}}
+         _ohdSystemAirSettingsModel.values.FC_UART_CONN="/dev/ttyS4"
+         _ohdSystemAirSettingsModel.update_count++
+         var board=findChild(loader.item,"portsBoardPinout")
+         verify(board !== null)
+         compare(board.pinNames.length,40)
+         compare(board.highlights[16].signal,"RX")
+         compare(board.highlights[18].signal,"TX")
+         compare(board.highlights[8],undefined)
+         var pin=findChild(board,"portsHeaderPin16")
+         mouseClick(pin)
+         compare(board.inspectedPin,16)
+
+         _ohdSystemAirSettingsModel.values.FC_UART_CONN="/dev/ttyUSB0"
+         _ohdSystemAirSettingsModel.update_count++
+         compare(board.highlights[16],undefined)
+         _ohdSystemGround.ohd_platform_type=20
+         selectUnit(1)
+         compare(Object.keys(board.highlights).length,0)
+         compare(board.inspectedPin,0)
+         _ohdSystemGroundSettings.headerRoutes={"/dev/ttyS4":{rx:16,tx:18}}
+         _ohdSystemGroundSettings.values.TRACKER_UART_OUT="/dev/ttyS4"
+         _ohdSystemGroundSettings.update_count++
+         compare(board.highlights[16],undefined)
+         compare(board.highlights[18].label,"Tracker")
+         _ohdSystemGround.is_alive=false
+         compare(Object.keys(board.highlights).length,0)
+     }
+     function test_gpio_highlights_use_physical_pins(){
+         _ohdSystemAir.ohd_platform_type=11
+         _ohdSystemAirSettingsModel.values.GPIO_2=1
+         _ohdSystemAirSettingsModel.values.GPIO_26=2
+         _ohdSystemAirSettingsModel.update_count++
+         var board=findChild(loader.item,"portsBoardPinout")
+         compare(board.highlights[3].signal,"High")
+         compare(board.highlights[37].signal,"Low")
+         _ohdSystemAirSettingsModel.values.GPIO_26=0
+         _ohdSystemAirSettingsModel.update_count++
+         compare(board.highlights[37],undefined)
      }
      function test_layout(){
          settings_form.showAdvancedSettings=true
