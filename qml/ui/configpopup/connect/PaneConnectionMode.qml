@@ -14,13 +14,15 @@ Rectangle {
     property bool connected: _ohdSystemAir.is_alive || _ohdSystemGround.is_alive
     property int keyboardIndex: 0
 
-    readonly property var groundSettings: _ohdSystemGroundSettings
+    property bool ethernetTargetAir: false
+    readonly property var ethernetUnit: ethernetTargetAir ? _ohdSystemAir : _ohdSystemGround
+    readonly property var ethernetSettings: ethernetTargetAir ? _ohdSystemAirSettingsModel : _ohdSystemGroundSettings
     readonly property int ethernetMode: {
-        groundSettings.update_count
-        if (!_ohdSystemGround.is_alive || !groundSettings.has_params_fetched ||
-                !groundSettings.param_int_exists("ETHERNET"))
+        ethernetSettings.update_count
+        if (!ethernetUnit.is_alive || !ethernetSettings.has_params_fetched ||
+                !ethernetSettings.param_int_exists("ETHERNET"))
             return -1
-        return groundSettings.get_cached_int("ETHERNET")
+        return ethernetSettings.get_cached_int("ETHERNET")
     }
 
     component ModeButton: AdvancedActionButton {
@@ -64,7 +66,7 @@ Rectangle {
         setMode(2)
     }
     function controls() {
-        var all = [autoMode, udpMode, tcpMode, tetheringButton]
+        var all = [autoMode, udpMode, tcpMode, tetheringButton, ethernetAir, ethernetGround]
         for (var i = 0; i < ethernetModes.count; ++i)
             all.push(ethernetModes.itemAt(i))
         for (var j = 0; j < lanRepeater.count; ++j) {
@@ -226,12 +228,42 @@ Rectangle {
                     anchors.margins: 13
                     spacing: 10
 
-                    Text {
-                        text: qsTr("GROUND ETHERNET MODE")
-                        color: settings_form.primaryText
-                        font.family: MenuTypography.family
-                        font.pixelSize: MenuTypography.body
-                        font.bold: true
+                    RowLayout {
+                        width: parent.width
+                        spacing: 4
+
+                        Text {
+                            Layout.fillWidth: true
+                            text: qsTr("ETHERNET MODE")
+                            color: settings_form.primaryText
+                            font.family: MenuTypography.family
+                            font.pixelSize: MenuTypography.body
+                            font.bold: true
+                        }
+
+                        ModeButton {
+                            id: ethernetAir
+                            Layout.fillWidth: false
+                            Layout.preferredWidth: 64
+                            Layout.preferredHeight: 26
+                            leftPadding: 4
+                            rightPadding: 4
+                            text: qsTr("Air")
+                            highlighted: root.ethernetTargetAir
+                            onClicked: root.ethernetTargetAir = true
+                        }
+
+                        ModeButton {
+                            id: ethernetGround
+                            Layout.fillWidth: false
+                            Layout.preferredWidth: 64
+                            Layout.preferredHeight: 26
+                            leftPadding: 4
+                            rightPadding: 4
+                            text: qsTr("Ground")
+                            highlighted: !root.ethernetTargetAir
+                            onClicked: root.ethernetTargetAir = false
+                        }
                     }
 
                     RowLayout {
@@ -251,28 +283,11 @@ Rectangle {
                                 enabled: root.ethernetMode >= 0
                                 highlighted: root.ethernetMode === modelData.value
                                 onClicked: {
-                                    if (!root.groundSettings.ui_is_busy && !highlighted)
-                                        root.groundSettings.try_set_param_int_async("ETHERNET", modelData.value, true)
+                                    if (!root.ethernetSettings.ui_is_busy && !highlighted)
+                                        root.ethernetSettings.try_set_param_int_async("ETHERNET", modelData.value, true)
                                 }
                             }
                         }
-                    }
-
-                    Text {
-                        width: parent.width
-                        wrapMode: Text.WordWrap
-                        text: {
-                            if (!_ohdSystemGround.is_alive)
-                                return qsTr("Connect to the Ground unit to change its Ethernet mode.")
-                            if (!root.groundSettings.has_params_fetched)
-                                return qsTr("Loading Ground settings…")
-                            if (root.ethernetMode < 0)
-                                return qsTr("Ethernet mode is unavailable on this Ground unit.")
-                            return qsTr("Changes take effect after rebooting the Ground unit.")
-                        }
-                        color: settings_form.secondaryText
-                        font.family: MenuTypography.family
-                        font.pixelSize: MenuTypography.body
                     }
                 }
             }
