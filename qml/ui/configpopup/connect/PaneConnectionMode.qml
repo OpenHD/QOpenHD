@@ -14,6 +14,39 @@ Rectangle {
     property bool connected: _ohdSystemAir.is_alive || _ohdSystemGround.is_alive
     property int keyboardIndex: 0
 
+    readonly property var groundSettings: _ohdSystemGroundSettings
+    readonly property int ethernetMode: {
+        groundSettings.update_count
+        if (!_ohdSystemGround.is_alive || !groundSettings.has_params_fetched ||
+                !groundSettings.param_int_exists("ETHERNET"))
+            return -1
+        return groundSettings.get_cached_int("ETHERNET")
+    }
+
+    component ModeButton: AdvancedActionButton {
+        id: button
+        Layout.fillWidth: true
+        Layout.minimumWidth: 0
+        background: Rectangle {
+            radius: 9
+            color: button.highlighted ? settings_form.accentColor : settings_form.panelBackgroundRaised
+            border.color: button.activeFocus ? (button.highlighted ? "white" : settings_form.accentColor) : settings_form.lineColor
+            border.width: button.activeFocus ? 2 : 1
+        }
+        contentItem: Text {
+            text: button.text
+            color: button.highlighted ? "white" : (button.enabled ? settings_form.primaryText : settings_form.secondaryText)
+            font.family: button.font.family
+            font.pixelSize: button.font.pixelSize
+            font.bold: true
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            wrapMode: Text.Wrap
+        }
+        onActiveFocusChanged: if (activeFocus) root.syncFocus(button)
+        Keys.onPressed: root.handleButtonKey(event)
+    }
+
     function setMode(mode) {
         if (settings.qopenhd_mavlink_connection_mode !== mode) {
             _mavlinkTelemetry.change_telemetry_connection_mode(mode)
@@ -32,18 +65,15 @@ Rectangle {
     }
     function controls() {
         var all = [autoMode, udpMode, tcpMode, tetheringButton]
-        for (var i = 0; i < lanRepeater.count; ++i) {
-            var row = lanRepeater.itemAt(i)
+        for (var i = 0; i < ethernetModes.count; ++i)
+            all.push(ethernetModes.itemAt(i))
+        for (var j = 0; j < lanRepeater.count; ++j) {
+            var row = lanRepeater.itemAt(j)
             if (row) all.push(row.connectButton)
         }
         if (settings.qopenhd_mavlink_connection_mode === 2)
             all = all.concat([ipField, saveButton])
-        var available = []
-        for (var j = 0; j < all.length; ++j) {
-            if (all[j] && all[j].visible && all[j].enabled)
-                available.push(all[j])
-        }
-        return available
+        return all.filter(function (control) { return control && control.visible && control.enabled })
     }
     function syncFocus(control) {
         var list = controls()
@@ -149,38 +179,23 @@ Rectangle {
                     }
                     RowLayout {
                         Layout.fillWidth: true; spacing: 8
-                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                        ModeButton {
                             id: autoMode
-                            Layout.fillWidth: true; height: MenuTypography.controlHeight
                             text: qsTr("AUTO")
                             highlighted: settings.qopenhd_mavlink_connection_mode === 0
                             onClicked: root.setMode(0)
-                            onActiveFocusChanged: if (activeFocus) root.syncFocus(autoMode)
-                            Keys.onPressed: root.handleButtonKey(event)
-                            background: Rectangle { radius: 9; color: autoMode.highlighted ? settings_form.accentColor : settings_form.panelBackgroundRaised; border.color: autoMode.activeFocus ? (autoMode.highlighted ? "white" : settings_form.accentColor) : settings_form.lineColor; border.width: autoMode.activeFocus ? 2 : 1 }
-                            contentItem: Text { text: autoMode.text; color: autoMode.highlighted ? "white" : settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                         }
-                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                        ModeButton {
                             id: udpMode
-                            Layout.fillWidth: true; height: MenuTypography.controlHeight
                             text: qsTr("MANUAL UDP")
                             highlighted: settings.qopenhd_mavlink_connection_mode === 1
                             onClicked: root.setMode(1)
-                            onActiveFocusChanged: if (activeFocus) root.syncFocus(udpMode)
-                            Keys.onPressed: root.handleButtonKey(event)
-                            background: Rectangle { radius: 9; color: udpMode.highlighted ? settings_form.accentColor : settings_form.panelBackgroundRaised; border.color: udpMode.activeFocus ? (udpMode.highlighted ? "white" : settings_form.accentColor) : settings_form.lineColor; border.width: udpMode.activeFocus ? 2 : 1 }
-                            contentItem: Text { text: udpMode.text; color: udpMode.highlighted ? "white" : settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                         }
-                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                        ModeButton {
                             id: tcpMode
-                            Layout.fillWidth: true; height: MenuTypography.controlHeight
                             text: qsTr("MANUAL TCP")
                             highlighted: settings.qopenhd_mavlink_connection_mode === 2
                             onClicked: root.setMode(2)
-                            onActiveFocusChanged: if (activeFocus) root.syncFocus(tcpMode)
-                            Keys.onPressed: root.handleButtonKey(event)
-                            background: Rectangle { radius: 9; color: tcpMode.highlighted ? settings_form.accentColor : settings_form.panelBackgroundRaised; border.color: tcpMode.activeFocus ? (tcpMode.highlighted ? "white" : settings_form.accentColor) : settings_form.lineColor; border.width: tcpMode.activeFocus ? 2 : 1 }
-                            contentItem: Text { text: tcpMode.text; color: tcpMode.highlighted ? "white" : settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                         }
                     }
 
@@ -192,6 +207,72 @@ Rectangle {
                         onClicked: _qopenhd.android_open_tethering_settings()
                         onActiveFocusChanged: if (activeFocus) root.syncFocus(tetheringButton)
                         Keys.onPressed: root.handleButtonKey(event)
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: ethernetColumn.implicitHeight + 26
+                radius: 12
+                color: settings_form.panelBackground
+                border.color: settings_form.lineColor
+
+                Column {
+                    id: ethernetColumn
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 13
+                    spacing: 10
+
+                    Text {
+                        text: qsTr("GROUND ETHERNET MODE")
+                        color: settings_form.primaryText
+                        font.family: MenuTypography.family
+                        font.pixelSize: MenuTypography.body
+                        font.bold: true
+                    }
+
+                    RowLayout {
+                        width: parent.width
+                        spacing: 8
+                        Repeater {
+                            id: ethernetModes
+                            model: [
+                                { label: qsTr("UNMANAGED"), value: 0 },
+                                { label: qsTr("HOTSPOT"), value: 1 },
+                                { label: qsTr("FORWARD + INTERNET"), value: 2 }
+                            ]
+                            delegate: ModeButton {
+                                leftPadding: 4
+                                rightPadding: 4
+                                text: modelData.label
+                                enabled: root.ethernetMode >= 0
+                                highlighted: root.ethernetMode === modelData.value
+                                onClicked: {
+                                    if (!root.groundSettings.ui_is_busy && !highlighted)
+                                        root.groundSettings.try_set_param_int_async("ETHERNET", modelData.value, true)
+                                }
+                            }
+                        }
+                    }
+
+                    Text {
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                        text: {
+                            if (!_ohdSystemGround.is_alive)
+                                return qsTr("Connect to the Ground unit to change its Ethernet mode.")
+                            if (!root.groundSettings.has_params_fetched)
+                                return qsTr("Loading Ground settings…")
+                            if (root.ethernetMode < 0)
+                                return qsTr("Ethernet mode is unavailable on this Ground unit.")
+                            return qsTr("Changes take effect after rebooting the Ground unit.")
+                        }
+                        color: settings_form.secondaryText
+                        font.family: MenuTypography.family
+                        font.pixelSize: MenuTypography.body
                     }
                 }
             }
