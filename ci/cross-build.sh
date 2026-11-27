@@ -91,7 +91,7 @@ EOF
   fi
   deps="$qt_deps,libc6-dev,libavcodec-dev,libavformat-dev,libavutil-dev,libgstreamer1.0-dev,libgstreamer-plugins-base1.0-dev,libdrm-dev,libgles-dev,libegl-dev"
   if [[ "$target" == rock-* ]]; then
-    deps="$qt_deps,libc6-dev,libdrm-dev,libgles-dev,libegl-dev,libwayland-dev,wayland-protocols,libpng-dev"
+    deps="$qt_deps,libc6-dev,libdrm-dev,libgles-dev,libegl-dev,libwayland-dev,wayland-protocols,libpng-dev,libavformat-dev,libavcodec-dev,libavutil-dev,libswscale-dev"
     [[ "$release" != bullseye ]] || deps+=",libweston-9-dev"
   fi
   # APT's sandbox user cannot traverse the runner's private workspace. Put

@@ -1,4 +1,7 @@
 #include "NxpVideoController.hpp"
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+#include "../rockchip/GroundOsdRecorder.hpp"
+#endif
 #include "videostreaming/vscommon/QOpenHDVideoHelper.hpp"
 #include "videostreaming/vscommon/decodingstatistcs.h"
 #include <QGuiApplication>
@@ -22,7 +25,12 @@ QPlatformNativeInterface* nativeInterface() {
 }
 }
 
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+NxpVideoController::NxpVideoController(QQuickWindow* window, GroundOsdRecorder* recorder)
+    : window_(window), recorder_(recorder) {
+#else
 NxpVideoController::NxpVideoController(QQuickWindow* window) : window_(window) {
+#endif
     window->installEventFilter(this);
     timer_.setInterval(1000);
     connect(&timer_, &QTimer::timeout, this, [this] { refresh(); });
@@ -97,10 +105,17 @@ void NxpVideoController::refresh() {
     auto stream = settings.generic.qopenhd_switch_primary_secondary ? settings.secondary_stream_config : settings.primary_stream_config;
     QString config = QString("%1:%2:%3:%4").arg(QString::fromStdString(stream.udp_rtp_input_ip_address))
         .arg(stream.udp_rtp_input_port).arg(int(stream.video_codec)).arg(settings.generic.dev_disable_primary_video);
-    presenter_->resize(window_->width(), window_->height(), QOpenHDVideoHelper::get_primary_video_scale_to_fit(),
-                       settings.generic.extra_screen_rotation);
+    const bool stretch = QOpenHDVideoHelper::get_primary_video_scale_to_fit();
+    const int rotation = settings.generic.extra_screen_rotation;
+    presenter_->resize(window_->width(), window_->height(), stretch, rotation);
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+    recorder_->setVideoLayout(stretch, rotation);
+#endif
     if (config == config_) return;
     input_.reset();
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+    recorder_->clearVideo();
+#endif
     if (settings.generic.dev_disable_primary_video) { config_ = config; return; }
     if (stream.video_codec != QOpenHDVideoHelper::VideoCodecH264 && stream.video_codec != QOpenHDVideoHelper::VideoCodecH265) {
         qWarning() << "Native video supports H.264 and H.265"; config_ = config; return;
@@ -108,7 +123,12 @@ void NxpVideoController::refresh() {
     try {
         input_ = std::make_unique<nxp::UdpVideo>(stream.video_codec == QOpenHDVideoHelper::VideoCodecH265,
             stream.udp_rtp_input_ip_address, stream.udp_rtp_input_port,
-            [this](std::shared_ptr<nxp::DecodedFrame> frame) { presenter_->submit(std::move(frame)); });
+            [this](std::shared_ptr<nxp::DecodedFrame> frame) {
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+                recorder_->submitVideo(frame);
+#endif
+                presenter_->submit(std::move(frame));
+            });
 #if defined(QOPENHD_ENABLE_RPI_VIDEO)
         DecodingStatistcs::instance().set_decoding_type("Pi FFmpeg / independent Wayland DMA-BUF");
 #elif defined(QOPENHD_ENABLE_ROCKCHIP_VIDEO)

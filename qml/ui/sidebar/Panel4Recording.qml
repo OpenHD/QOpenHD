@@ -35,11 +35,15 @@ import OpenHD 1.0
 import "../elements"
 
 SideBarBasePanel {
-    override_title: "Air recording"
+    id: panel
+    readonly property var groundRecorder: typeof _groundOsdRecorder !== "undefined" ? _groundOsdRecorder : null
+    readonly property bool groundRecordingSupported: groundRecorder !== null && groundRecorder.available
+    override_title: groundRecordingSupported ? qsTr("Recording") : qsTr("Air recording")
     headerIcon: "\uf0c7"
 
-    function takeover_control(){
-        recording_mode.takeover_control();
+    function takeover_control() {
+        if (groundButton.enabled) groundButton.forceActiveFocus()
+        else recording_mode.takeover_control()
     }
 
     Column {
@@ -47,6 +51,35 @@ SideBarBasePanel {
         anchors.topMargin: 0
         spacing: 5
 
+        Column {
+            width: recording_mode.width
+            visible: panel.groundRecordingSupported
+            spacing: 4
+            Button {
+                id: groundButton
+                width: parent.width
+                enabled: parent.visible && !panel.groundRecorder.stopping
+                text: parent.visible && panel.groundRecorder.active
+                      ? qsTr("Stop Ground recording") : qsTr("Record Ground video with OSD")
+                onClicked: {
+                    if (panel.groundRecorder.active) panel.groundRecorder.stop()
+                    else panel.groundRecorder.start()
+                }
+                Keys.onUpPressed: sidebar.regain_control_on_sidebar_stack()
+                Keys.onLeftPressed: sidebar.regain_control_on_sidebar_stack()
+                Keys.onDownPressed: recording_mode.takeover_control()
+                Keys.onRightPressed: clicked()
+                Keys.onReturnPressed: clicked()
+                Keys.onEnterPressed: clicked()
+            }
+            Text {
+                width: parent.width
+                visible: text.length > 0
+                text: parent.visible ? panel.groundRecorder.status : ""
+                color: sidebar.textColor("white")
+                wrapMode: Text.Wrap
+            }
+        }
         Rectangle {
             color: "transparent"
             height: recording_mode.height
@@ -55,11 +88,12 @@ SideBarBasePanel {
                 id: recording_mode
                 anchors.centerIn: parent
                 anchors.leftMargin: 40
-                m_title: "Recording"
+                m_title: qsTr("Air recording")
                 m_param_id: "AIR_RECORDING_E"
                 m_settings_model: _airCameraSettingsModel
                 onGoto_previous: {
-                    sidebar.regain_control_on_sidebar_stack()
+                    if (groundButton.enabled) groundButton.forceActiveFocus()
+                    else sidebar.regain_control_on_sidebar_stack()
                 }
                 onGoto_next: {
                     // Do nothing

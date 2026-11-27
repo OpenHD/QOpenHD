@@ -56,6 +56,9 @@
 #include "decodingstatistcs.h"
 #ifdef QOPENHD_ENABLE_NXP_VIDEO
 #include "videostreaming/nxp/NxpVideoController.hpp"
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+#include "videostreaming/rockchip/GroundOsdRecorder.hpp"
+#endif
 #endif
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
 #include "QSGVideoTextureItem.h"
@@ -753,6 +756,12 @@ int main(int argc, char *argv[]) {
      );
 
     engine.rootContext()->setContextProperty("QOPENHD_GPS_PREVIEW", app.arguments().contains("--gps-preview"));
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+    GroundOsdRecorder groundOsdRecorder;
+    engine.rootContext()->setContextProperty("_groundOsdRecorder", &groundOsdRecorder);
+#else
+    engine.rootContext()->setContextProperty("_groundOsdRecorder", static_cast<QObject*>(nullptr));
+#endif
     UiSimulator::instance().install(engine.rootContext());
     //engine.load(QUrl(QLatin1String("qrc:/main.qml")));
     //const QUrl url("qrc:/qt/qml/hello/qml/main.qml");
@@ -816,7 +825,12 @@ int main(int argc, char *argv[]) {
     if (engine.rootObjects().isEmpty()) return 1;
     auto nxpWindow = qobject_cast<QQuickWindow*>(engine.rootObjects().first());
     if (!nxpWindow) return 1;
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+    groundOsdRecorder.setWindow(nxpWindow);
+    NxpVideoController nxpVideo(nxpWindow, &groundOsdRecorder);
+#else
     NxpVideoController nxpVideo(nxpWindow);
+#endif
 #endif
     // Now we start mavlink for the first time
     MavlinkTelemetry::instance().start();

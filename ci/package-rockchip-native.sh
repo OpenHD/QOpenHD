@@ -37,9 +37,9 @@ dependencies=$(paste -sd, "$repo/ci/rockchip-runtime-dependencies.txt")
 case "$release" in
     bullseye)
         dependencies=${dependencies/weston,/weston (>= 9),weston (<< 10),}
-        dependencies+=",libssl1.1,libweston-9-0"
+        dependencies+=",libssl1.1,libweston-9-0,libavformat58,libavcodec58,libavutil56,libswscale5"
         ;;
-    bookworm) dependencies+=",libssl3" ;;
+    bookworm) dependencies+=",libssl3,libavformat59,libavcodec59,libavutil57,libswscale6" ;;
 esac
 for family in rk3566 rk3588; do
     other=rk3588; [[ "$family" == rk3588 ]] && other=rk3566
