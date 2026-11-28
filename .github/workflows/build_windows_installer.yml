@@ -29,7 +29,7 @@ permissions:
 
 env:
   OPENHD_SNAPSHOT_NUMBER: ${{ github.ref_name == 'snapshots' && github.run_number || '' }}
-  QOPENHD_WINDOWS_VERSION: ${{ github.ref_name == 'snapshots' && format('0.0.{0}', github.run_number) || '3.0.0' }}
+  QOPENHD_WINDOWS_VERSION: ${{ github.ref_name == 'snapshots' && format('4.2.{0}', github.run_number) || '3.0.0' }}
   QT_VERSION: 5.15.2
   BUILD_TYPE: Release
   FFMPEG_ARCHIVE: ffmpeg-n5.1-latest-win32-lgpl-shared-5.1.zip

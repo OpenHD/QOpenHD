@@ -106,7 +106,7 @@ VERSION="3.0-alpha-$(date -d '+1 hour' +'%m-%d-%Y--%H-%M-%S')-${VER2}"
 
 PACKAGE_EPOCH=()
 if [[ ${OPENHD_SNAPSHOT_NUMBER:-} =~ ^[1-9][0-9]*$ ]]; then
-    VERSION="0.0.${OPENHD_SNAPSHOT_NUMBER}"
+    VERSION="4.2.${OPENHD_SNAPSHOT_NUMBER}"
     PACKAGE_EPOCH=(--epoch 1)
 fi
 

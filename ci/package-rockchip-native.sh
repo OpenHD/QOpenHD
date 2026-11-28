@@ -9,7 +9,7 @@ revision=$(git -C "$repo" rev-parse --short=8 HEAD)
 version=${QOPENHD_PACKAGE_VERSION:-3.0-alpha-$(date -u +%Y%m%d%H%M)-$revision}
 debian_version=$version
 if [[ ${OPENHD_SNAPSHOT_NUMBER:-} =~ ^[1-9][0-9]*$ ]]; then
-    version="0.0.$OPENHD_SNAPSHOT_NUMBER"
+    version="4.2.$OPENHD_SNAPSHOT_NUMBER"
     debian_version="1:$version"
 fi
 output=${QOPENHD_PACKAGE_DIR:-$repo}

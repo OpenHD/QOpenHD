@@ -104,7 +104,7 @@ jobs:
       - name: Stamp snapshot APK version
         if: env.OPENHD_SNAPSHOT_NUMBER != ''
         run: |
-          sed -i -E "s/android:versionName=\"[^\"]*\"/android:versionName=\"0.0.$OPENHD_SNAPSHOT_NUMBER\"/; s/android:versionCode=\"[^\"]*\"/android:versionCode=\"$((10000 + OPENHD_SNAPSHOT_NUMBER))\"/" android/AndroidManifest.xml
+          sed -i -E "s/android:versionName=\"[^\"]*\"/android:versionName=\"4.2.$OPENHD_SNAPSHOT_NUMBER\"/; s/android:versionCode=\"[^\"]*\"/android:versionCode=\"$((10000 + OPENHD_SNAPSHOT_NUMBER))\"/" android/AndroidManifest.xml
 
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
