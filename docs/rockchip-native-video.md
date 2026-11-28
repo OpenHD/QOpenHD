@@ -2,8 +2,8 @@
 
 The `rockchip_native` qmake configuration uses the tested native RTP parser,
 Rockchip MPP H.264/H.265 decoding, and the independent Wayland presenter from
-the NXP implementation. It does not compile the Hantro, FFmpeg, GStreamer,
-QtMultimedia or speech backends. Primary video commits a desynchronized
+the NXP implementation. H.264/H.265 playback uses MPP. Recording with the
+OSD uses the distribution's FFmpeg libraries. Primary video commits a desynchronized
 DMA-BUF subsurface below the transparent HUD. Secondary video and the startup
 movie use EGL external textures in Qt's render thread.
 

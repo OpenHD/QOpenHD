@@ -39,13 +39,19 @@ class NativePackages(unittest.TestCase):
                 self.assertFalse((Path(fixture) / 'etc/qopenhd-rockchip/native-video-enabled').exists())
                 self.assertEqual((Path(fixture) / 'usr/local/bin/QOpenHD').resolve(), base / 'QOpenHD')
                 dependencies = subprocess.check_output(['dpkg-deb', '-f', str(package), 'Depends'], text=True)
-                for forbidden in ['-dev', 'qmake', 'gstreamer', 'libavcodec', 'libavformat']:
+                for forbidden in ['-dev', 'qmake', 'gstreamer']:
                     self.assertNotIn(forbidden, dependencies)
                 dynamic = subprocess.check_output(['readelf', '-d', str(base / 'QOpenHD')], text=True)
-                for forbidden in ['libavcodec', 'libavformat', 'libgstreamer', 'libimxvpuapi', 'libimxdmabuffer']:
+                for forbidden in ['libgstreamer', 'libimxvpuapi', 'libimxdmabuffer']:
                     self.assertNotIn(forbidden, dynamic)
                 self.assertIn('librockchip_mpp.so', dynamic)
-                if 'distribution=bullseye' in (base / 'build-info.txt').read_text():
+                bullseye = 'distribution=bullseye' in (base / 'build-info.txt').read_text()
+                # Recording uses FFmpeg while MPP remains the native decoder.
+                av_versions = (58, 58, 56, 5) if bullseye else (59, 59, 57, 6)
+                for lib, version in zip(('libavcodec', 'libavformat', 'libavutil', 'libswscale'), av_versions):
+                    self.assertIn(f'{lib}{version}', dependencies)
+                    self.assertIn(f'[{lib}.so.{version}]', dynamic)
+                if bullseye:
                     self.assertTrue((base / 'kiosk-shell-black.so').is_file())
                     self.assertIn('weston (<< 10)', dependencies)
                     self.assertTrue((base / 'licenses/weston-kiosk/COPYING').is_file())
