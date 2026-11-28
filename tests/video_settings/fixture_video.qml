@@ -10,11 +10,21 @@ Item {
  QtObject {id:testCapabilities;property bool mobile:false;property bool avcodec:true;property bool gstreamer:false;property bool nativeVideo:false;property bool androidVideo:false;property bool audio:true}
  QtObject {id:settings_form;property bool showDeveloperSettings:false;property bool showAdvancedSettings:false;property bool darkMode:true;property color pageBackground:"#091827";property color panelBackground:"#102235";property color panelBackgroundRaised:"#15283b";property color lineColor:"#26394c";property color primaryText:"white";property color secondaryText:"#aebdcb";property color accentColor:"#278cff";property color errorColor:"red"}
  QtObject {id:_qopenhd;property string platform:"windows";function is_linux(){return platform==="linux"||platform==="rpi"||platform==="rock"||platform==="nxp"} function is_android(){return platform==="android"} function is_platform_rpi(){return platform==="rpi"} function is_platform_rock(){return platform==="rock"}}
- QtObject {id:_restartqopenhdmessagebox;property int requests:0;function show(){requests++}}
+ QtObject {
+  id:_restartqopenhdmessagebox
+  property int requests:0
+  property real scaleAtNotification:1.0
+  function show(){requests++;scaleAtNotification=settings.persistedScale}
+ }
  QtObject {id:_audioControl;property bool playing:false;property int changes:0;function setPlaybackEnabled(enabled){playing=enabled;changes++}}
  QtObject {id:_mouseHelper;property bool hidden:false;property int cursor:0;property int size:1;function set_hide_cursor_inactive_enable(enabled){hidden=enabled} function set_active_cursor_type_and_scale(type,scale){cursor=type;size=scale}}
  QtObject {
   id:settings
+  property real storedScale:1.0
+  property real persistedScale:1.0
+  property int scaleWrites:0
+  function setValue(key,value){if(key==="global_scale"){storedScale=value;scaleWrites++}}
+  function sync(){persistedScale=storedScale}
   property bool secondary_camera_available:false
   property bool primary_video_scale_to_fit:false
   property bool qopenhd_switch_primary_secondary:false
@@ -57,7 +67,10 @@ Item {
   function choice(name,index){var item=find(page,name);verify(item!==null,name);item.currentIndex=index;item.activated(index)}
   function init(){
    pageLoader.active=false
+   pageLoader.visible=true
    Object.keys(scene.defaults).forEach(function(key){settings[key]=scene.defaults[key]})
+   settings.storedScale=1.0;settings.persistedScale=1.0;settings.scaleWrites=0
+   _restartqopenhdmessagebox.requests=0
    scene.Window.window.width=1500;scene.Window.window.height=1000;scene.width=1500;scene.height=1000
    settings_form.showDeveloperSettings=false;settings_form.showAdvancedSettings=false;_qopenhd.platform="windows"
    testCapabilities.mobile=false;testCapabilities.avcodec=true;testCapabilities.gstreamer=false;testCapabilities.nativeVideo=false;testCapabilities.androidVideo=false;testCapabilities.audio=true
@@ -108,9 +121,53 @@ Item {
    choice("videoCursorStyle",2);compare(settings.custom_cursor_type,2);compare(_mouseHelper.cursor,2)
    choice("videoCursorSize",2);compare(settings.custom_cursor_scale,2);compare(_mouseHelper.size,2)
    toggle("videoAutoHide",true);compare(settings.enable_cursor_auto_hide,true);compare(_mouseHelper.hidden,true)
-   var scale=find(page,"videoAppScale"),before=_restartqopenhdmessagebox.requests;scale.value=1.2;scale.moved();compare(settings.global_scale,1.2);compare(_restartqopenhdmessagebox.requests,before+1)
    settings_form.showAdvancedSettings=true;choice("videoRotation",2);compare(settings.general_screen_rotation,180);toggle("videoFullscreen",true);compare(settings.dev_force_show_full_screen,true);toggle("videoTransparentSettings",true);compare(settings.screen_settings_openhd_parameters_transparent,true)
    settings_form.showDeveloperSettings=true;choice("videoFontDpi",4);compare(settings.screen_custom_font_dpi,100);toggle("videoTransparentBackground",false);compare(settings.app_background_transparent,false);toggle("videoSwapInterval",true);compare(settings.dev_set_swap_interval_zero,true)
+  }
+  function test_application_scale_applies_only_on_request(){
+   var scale=find(page,"videoAppScale")
+   var apply=find(page,"videoAppScaleApply")
+   compare(scale.displayText,"1.0x")
+   verify(!apply.enabled)
+
+   mouseDrag(scale,50,scale.height/2,42,0)
+   verify(apply.enabled)
+   compare(settings.global_scale,1.0)
+   compare(_restartqopenhdmessagebox.requests,0)
+
+   mouseClick(scale,8,scale.height/2)
+   compare(scale.displayText,"0.3x")
+   verify(apply.enabled)
+   for(var i=0;i<7;i++)keyClick(Qt.Key_Right)
+   compare(scale.displayText,"1.0x")
+   verify(!apply.enabled)
+   keyClick(Qt.Key_Right)
+   compare(scale.displayText,"1.1x")
+   verify(apply.enabled)
+   compare(settings.global_scale,1.0)
+   compare(settings.scaleWrites,0)
+   compare(_restartqopenhdmessagebox.requests,0)
+
+   mouseClick(apply)
+   compare(settings.global_scale,1.1)
+   compare(settings.scaleWrites,1)
+   compare(_restartqopenhdmessagebox.requests,1)
+   compare(_restartqopenhdmessagebox.scaleAtNotification,1.1)
+   verify(!apply.enabled)
+  }
+  function test_application_scale_discards_when_hidden(){
+   var scale=find(page,"videoAppScale")
+   var apply=find(page,"videoAppScaleApply")
+   mouseClick(scale,8,scale.height/2)
+   verify(apply.enabled)
+
+   pageLoader.visible=false
+   pageLoader.visible=true
+   compare(scale.displayText,"1.0x")
+   verify(!apply.enabled)
+   compare(settings.global_scale,1.0)
+   compare(settings.scaleWrites,0)
+   compare(_restartqopenhdmessagebox.requests,0)
   }
   function test_no_writes_when_recreating_or_changing_access(){
    pageLoader.active=false

@@ -2,6 +2,7 @@ import "../MenuTypography.js" as Typography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import ".."
 import "../openhd_settings"
 
 FocusScope {
@@ -43,6 +44,11 @@ FocusScope {
         {text:qsTr("Medium (32 px)"),value:1}, {text:qsTr("Large (64 px)"),value:2}, {text:qsTr("Extra large (128 px)"),value:3}]
     readonly property var rotations: [{text:qsTr("0 deg"),value:0},{text:qsTr("90 deg (experimental)"),value:90},{text:qsTr("180 deg"),value:180},{text:qsTr("270 deg (experimental)"),value:270}]
     readonly property var dpiOptions: [{text:qsTr("Disabled"),value:-1},{text:qsTr("Auto (recommended)"),value:0},{text:"50",value:50},{text:"72",value:72},{text:"100",value:100},{text:"120",value:120},{text:"150",value:150}]
+    property var pendingAppScale: null
+    readonly property bool appScaleChanged: pendingAppScale !== null
+        && Math.abs(pendingAppScale - settings.global_scale) > 1e-9
+
+    onVisibleChanged: if (!visible) pendingAppScale = null
 
     function gainFocus() { scroll.forceActiveFocus() }
     function indexOfValue(options, value) {
@@ -165,8 +171,42 @@ FocusScope {
                         }
                     VideoSettingsRow {
                         objectName:"videoAppScaleRow"; Layout.fillWidth:true; Layout.minimumWidth:0; Layout.preferredHeight:implicitHeight; Layout.fillHeight:false; Layout.alignment:Qt.AlignTop; visible:true
-                        label:qsTr("Application Scale"); hint:qsTr("Resize the application interface; restart required."); icon:""; controlWidth:210; minimumControlWidth:180
-                        MapValueSlider { objectName:"videoAppScale"; anchors.fill:parent; from:0.3; to:2.5; stepSize:0.1; value:settings.global_scale; displayText:value.toFixed(1)+"x"; onMoved:root.commit("global_scale",value,true) }
+                        label: qsTr("Application Scale")
+                        hint: qsTr("Resize the application interface; restart required.")
+                        controlWidth: 320
+                        minimumControlWidth: 275
+
+                        RowLayout {
+                            anchors.fill: parent
+                            spacing: 8
+
+                            MapValueSlider {
+                                objectName: "videoAppScale"
+                                Layout.fillWidth: true
+                                from: 0.3
+                                to: 2.5
+                                stepSize: 0.1
+                                value: root.pendingAppScale === null ? settings.global_scale : root.pendingAppScale
+                                displayText: value.toFixed(1) + "x"
+                                onMoved: root.pendingAppScale = value
+                            }
+
+                            AdvancedActionButton {
+                                objectName: "videoAppScaleApply"
+                                text: qsTr("Apply")
+                                enabled: root.appScaleChanged
+                                primary: enabled
+                                opacity: enabled ? 1 : 0.5
+                                onClicked: {
+                                    if (!root.appScaleChanged) return
+                                    settings.global_scale = root.pendingAppScale
+                                    settings.setValue("global_scale", settings.global_scale)
+                                    settings.sync()
+                                    root.pendingAppScale = null
+                                    _restartqopenhdmessagebox.show()
+                                }
+                            }
+                        }
                     }
                     VideoSettingsRow {
                         objectName:"videoAutoHideRow"; Layout.fillWidth:true; Layout.minimumWidth:0; Layout.preferredHeight:implicitHeight; Layout.fillHeight:false; Layout.alignment:Qt.AlignTop; visible:root.desktop

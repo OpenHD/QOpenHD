@@ -51,7 +51,19 @@ case=case.replace('"Zero-width display row at "+sizes[i][0]+": "+names[j]', '"In
 case=case.replace('    for(var j=0;j<names.length;j++){','    if(mode>=1)names=names.concat(["videoRotationRow","videoFullscreenRow","videoTransparentSettingsRow"])\n    if(mode===2)names=names.concat(["videoTransparentBackgroundRow","videoSwapIntervalRow","videoFontDpiRow"])\n    for(var j=0;j<names.length;j++){')
 case=case.replace('    grabImage(scene).save("build/video-normal-"+sizes[i][0]+".png")','    if(mode===0)grabImage(scene).save("build/video-compiled-normal-"+sizes[i][0]+".png")')
 case=case[:-4]+'   }\n'+case[-4:]
-fixture=fixture[:fixture.index('  function test_normal_and_two_streams(){')]+case+' }\n}\n'
+start=fixture.index('  function test_application_scale_applies_only_on_request(){')
+end=fixture.index('  function test_no_writes_when_recreating_or_changing_access(){',start)
+scale_cases=fixture[start:end].replace('   pageLoader.visible=false', '''   mouseClick(find(page,"settingsTab2"))
+   tryCompare(page,"currentPage",2)
+   mouseClick(find(page,"settingsTab4"))
+   tryCompare(page,"currentPage",4)
+   compare(scale.displayText,"1.0x")
+   verify(!apply.enabled)
+
+   mouseClick(scale,8,scale.height/2)
+   verify(apply.enabled)
+   pageLoader.visible=false''')
+fixture=fixture[:fixture.index('  function test_normal_and_two_streams(){')]+case+scale_cases+' }\n}\n'
 (folder/'tst_compiled.qml').write_text(fixture,encoding='utf-8')
 env=os.environ.copy();env['PATH']=str(args.qt_bin)+os.pathsep+str(args.make_bin)+os.pathsep+env.get('PATH','')
 env.update(QT_QPA_PLATFORM_PLUGIN_PATH=str(args.qt_bin.parent/'plugins/platforms'),QML2_IMPORT_PATH=str(args.qt_bin.parent/'qml'),QT_QUICK_BACKEND='software',QT_QUICK_CONTROLS_STYLE='Material',QT_SCALE_FACTOR='1',QT_FORCE_STDERR_LOGGING='1')
