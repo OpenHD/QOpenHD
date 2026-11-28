@@ -29,6 +29,7 @@ permissions:
 
 env:
   OPENHD_SNAPSHOT_NUMBER: ${{ github.ref_name == 'snapshots' && github.run_number || '' }}
+  QOPENHD_WINDOWS_VERSION: ${{ github.ref_name == 'snapshots' && format('0.0.{0}', github.run_number) || '3.0.0' }}
   QT_VERSION: 5.15.2
   BUILD_TYPE: Release
   FFMPEG_ARCHIVE: ffmpeg-n5.1-latest-win32-lgpl-shared-5.1.zip
@@ -227,11 +228,18 @@ jobs:
           $stage = Join-Path $env:RUNNER_TEMP 'qopenhd-unsigned-application'
           New-Item -ItemType Directory -Force -Path $stage | Out-Null
           $generator = Join-Path $env:RUNNER_TEMP 'qopenhd-uninstaller-generator.exe'
-          & "${env:ProgramFiles(x86)}/NSIS/makensis.exe" /DINNER "/DOUTFILE=$generator" "/DUNINSTALLER_OUTPUT=$stage/QOpenHD-Uninstall.exe" tools/qopenhd_installer.nsi
+          $uninstaller = Join-Path $stage 'QOpenHD-Uninstall.exe'
+          & "${env:ProgramFiles(x86)}/NSIS/makensis.exe" /DINNER "/DQOPENHD_VERSION=$env:QOPENHD_WINDOWS_VERSION" "/DOUTFILE=$generator" "/DUNINSTALLER_OUTPUT=$uninstaller" tools/qopenhd_installer.nsi
           if ($LASTEXITCODE -ne 0) { throw 'Uninstaller generator build failed' }
           $process = Start-Process -FilePath $generator -WindowStyle Hidden -Wait -PassThru
-          if ($process.ExitCode -ne 0 -or !(Test-Path "$stage/QOpenHD-Uninstall.exe")) { throw 'Uninstaller generation failed' }
+          if ($process.ExitCode -ne 0 -or !(Test-Path -LiteralPath $uninstaller)) { throw 'Uninstaller generation failed' }
           Copy-Item build/release/QOpenHD.exe $stage
+          foreach ($file in ('QOpenHD.exe', 'QOpenHD-Uninstall.exe')) {
+            $info = (Get-Item -LiteralPath (Join-Path $stage $file)).VersionInfo
+            if ($info.ProductName -ne 'QOpenHD' -or $info.ProductVersion -ne "$env:QOPENHD_WINDOWS_VERSION.0") {
+              throw "Unexpected QOpenHD version metadata in $file"
+            }
+          }
 
       - name: Upload unsigned application
         if: env.SIGNING_MODE != 'none'
@@ -287,10 +295,15 @@ jobs:
             $signArguments += "/DSIGNED_UNINSTALLER=$deployDir/QOpenHD-Uninstall.exe"
           }
           & $makensis @signArguments `
+            "/DQOPENHD_VERSION=$env:QOPENHD_WINDOWS_VERSION" `
             "/DDESTDIR=$deployDir" `
             "/DOUTFILE=$installer" `
             $script
           if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
+          $info = (Get-Item -LiteralPath $installer).VersionInfo
+          if ($info.ProductName -ne 'QOpenHD' -or $info.ProductVersion -ne "$env:QOPENHD_WINDOWS_VERSION.0") {
+            throw 'Unexpected QOpenHD installer version metadata'
+          }
 
       - name: Upload unsigned installer
         if: env.SIGNING_MODE != 'none'

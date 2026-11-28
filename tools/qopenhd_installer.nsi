@@ -25,6 +25,17 @@
 !endif
 
 
+!ifndef QOPENHD_VERSION
+!define QOPENHD_VERSION "3.0.0"
+!endif
+VIProductVersion "${QOPENHD_VERSION}.0"
+VIAddVersionKey "ProductName" "${APPNAME}"
+VIAddVersionKey "CompanyName" "${ORGNAME}"
+VIAddVersionKey "FileDescription" "${APPNAME}"
+VIAddVersionKey "FileVersion" "${QOPENHD_VERSION}.0"
+VIAddVersionKey "ProductVersion" "${QOPENHD_VERSION}.0"
+VIAddVersionKey "LegalCopyright" "OpenHD"
+
 Name "${APPNAME}"
 OutFile "${OUTFILE}"
 Var StartMenuFolder

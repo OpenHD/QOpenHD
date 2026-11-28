@@ -92,6 +92,12 @@ win32:CONFIG(lowmemrelease, debug|release) {
 }
 
 win32 {
+    isEmpty(QOPENHD_WINDOWS_VERSION): QOPENHD_WINDOWS_VERSION = $$(QOPENHD_WINDOWS_VERSION)
+    isEmpty(QOPENHD_WINDOWS_VERSION): QOPENHD_WINDOWS_VERSION = 3.0.0
+    VERSION = $$QOPENHD_WINDOWS_VERSION
+    QMAKE_TARGET_PRODUCT = QOpenHD
+    QMAKE_TARGET_COMPANY = OpenHD
+    QMAKE_TARGET_DESCRIPTION = QOpenHD
     LIBS += -lcrypt32
     ffmpeg_bin = $$PWD/build-libs-windows/ffmpeg/bin
     windows_deploy_script = $$PWD/tools/deploy_windows.ps1

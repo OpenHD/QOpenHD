@@ -27,7 +27,8 @@ It signs and verifies `QOpenHD.exe` and `QOpenHD-Uninstall.exe`, embeds both
 in the installer, then signs and verifies the outer installer. Every signature
 must be timestamped. The test certificate is trusted only inside the ephemeral
 GitHub-hosted test runner; production verification uses normal Windows trust.
-Third-party libraries are redistributed unchanged.
+The application, uninstaller and installer share the same Windows product
+version. Third-party libraries are redistributed unchanged.
 
 Output names distinguish `-Unsigned`, `-Test-Signed`, and `-Signed` builds.
 Missing configuration or failed signing stops the job. Test builds are for
