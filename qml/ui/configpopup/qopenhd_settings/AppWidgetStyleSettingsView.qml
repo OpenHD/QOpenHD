@@ -57,11 +57,13 @@ FocusScope {
     property bool capturePending:false
     property bool refreshAgain:false
     property int captureGeneration:0
-    readonly property real captureScale:Math.min(1,1024/Math.max(1,source?source.width:1,source?source.height:1))
+    readonly property real captureScale:Math.min(1,(manualPreview?480:1024)/Math.max(1,source?source.width:1,source?source.height:1))
     readonly property size captureSize:Qt.size(Math.max(1,Math.ceil((source?source.width:1)*captureScale)),Math.max(1,Math.ceil((source?source.height:1)*captureScale)))
     // Qt scales offscreen targets for high-DPI screens as well.
     readonly property size grabSize:Qt.size(Math.max(1,Math.floor(captureSize.width/Screen.devicePixelRatio)),Math.max(1,Math.floor(captureSize.height/Screen.devicePixelRatio)))
+    readonly property bool manualPreview:typeof _qopenhd !== "undefined" && _qopenhd.is_platform_rpi()
     function requestPreview(){
+        if(manualPreview)return
         if(!visible||!source)return
         if(capturePending){refreshAgain=true;return}
         previewRefresh.restart()
@@ -229,10 +231,18 @@ FocusScope {
                                 Text {text:"\uf06e";color:settings_form.accentColor;font.family:"Font Awesome 5 Free";font.pixelSize: Typography.sectionIcon}
                                 Text {text:qsTr("OSD preview");color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.sectionTitle;font.bold:true}
                             }
+                            AdvancedActionButton {
+                                objectName:"styleCaptureButton"
+                                visible:root.manualPreview && !!root.source
+                                text:root.snapshotUrl.toString().length?qsTr("Refresh preview"):qsTr("Show preview")
+                                enabled:!root.capturePending
+                                onClicked:root.capturePending=true
+                            }
                             Rectangle {
+                                visible:!root.manualPreview || root.snapshotUrl.toString().length>0 || root.capturePending
                                 id:preview;objectName:"liveOsdStylePreview";Layout.fillWidth:true;Layout.preferredHeight:(root.previewWidth-28)/root.sourceAspect
                                 color:"#102332";radius:8;clip:true
-                                Image {objectName:"stylePreviewBackground";anchors.fill:parent;scale:1.06;source:"../../../resources/osd-style-alpine.png";fillMode:Image.PreserveAspectCrop;asynchronous:true}
+                                Image {objectName:"stylePreviewBackground";anchors.fill:parent;scale:1.06;source:!root.manualPreview||root.capturePending||root.snapshotUrl.toString().length?"../../../resources/osd-style-alpine.png":"";fillMode:Image.PreserveAspectCrop;asynchronous:true}
                                 Rectangle {anchors.fill:parent;color:"#22071725"}
                                 Loader {
                                     id:osdPreviewLoader

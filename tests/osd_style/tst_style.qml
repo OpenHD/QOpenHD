@@ -52,6 +52,11 @@ Item {
         property string osd_bottom_bar_text_color:""
         property string osd_bottom_bar_font:""
     }
+    QtObject {
+        id:_qopenhd
+        property bool raspberryPi:false
+        function is_platform_rpi(){return raspberryPi}
+    }
     QtObject {id:hudOverlayGrid;readonly property Item osdStylePreviewItem:actualOsd}
     Item {
         id:actualOsd;property string telemetry:"12.4 V";width:1280;height:720;visible:false;opacity:settings.osd_opacity
@@ -88,7 +93,7 @@ Item {
             }
             verify(Qt.colorEqual(markerPixel(),"white"))
             var previous=snapshot.source.toString()
-            page.usePreset(1);wait(150);waitForSnapshot()
+            page.usePreset(1);tryVerify(function(){return snapshot.source.toString()!==previous},5000);waitForSnapshot()
             verify(snapshot.source.toString()!==previous)
             verify(Qt.colorEqual(markerPixel(),"#14ff00"))
             // Telemetry may continue changing in the hidden production HUD.
@@ -132,6 +137,30 @@ Item {
             wait(200)
             compare(page.snapshotUrl.toString(),"");compare(page.capturePending,false)
             compare(visual(page,"styleOsdTexture"),null)
+        }
+        function test_pi_preview_on_demand(){
+            page.visible=false
+            _qopenhd.raspberryPi=true
+            try {
+                page.visible=true
+                page.usePreset(1)
+                wait(250)
+                compare(page.snapshotUrl.toString(),"")
+                compare(visual(page,"styleOsdTexture"),null)
+                var button=visual(page,"styleCaptureButton")
+                verify(button.visible)
+                button.clicked()
+                waitForSnapshot()
+                verify(page.captureSize.width<=480)
+                var snapshot=page.snapshotUrl.toString()
+                page.resetDefaults()
+                wait(250)
+                compare(page.snapshotUrl.toString(),snapshot)
+            } finally {
+                page.visible=false
+                _qopenhd.raspberryPi=false
+                page.visible=true
+            }
         }
         function test_presets_persist_without_save(){
             compare(visual(page,"styleApply"),null);compare(visual(page,"styleRevert"),null)

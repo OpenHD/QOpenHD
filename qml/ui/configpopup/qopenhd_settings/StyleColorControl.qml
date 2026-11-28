@@ -18,7 +18,8 @@ Rectangle {
         anchors.fill:parent;anchors.margins:10;spacing:8
         RowLayout {
             Layout.fillWidth:true;spacing:9
-            AdvancedActionButton {
+            AbstractButton {
+                activeFocusOnTab:true
                 objectName:"customColorButton"
                 topInset:0;bottomInset:0;leftInset:0;rightInset:0
                 Layout.preferredWidth:34;Layout.preferredHeight: Typography.controlHeight
@@ -36,12 +37,13 @@ Rectangle {
             Layout.fillWidth:true;spacing:5
             Repeater {
                 model:["#ffffff","#ec71bf","#ff4035","#ffff00","#14ff00","#249fff","#a16bff","#000000"]
-                delegate:AdvancedActionButton {
+                delegate:AbstractButton {
+                    activeFocusOnTab:true
                     width:17;height:Typography.controlHeight
                     topInset:0;bottomInset:0;leftInset:0;rightInset:0
                     Accessible.name:modelData
                     onClicked:root.colorSelected(modelData)
-                    background:Rectangle {radius:9;color:modelData;border.color:Qt.colorEqual(root.selectedColor,modelData)?settings_form.primaryText:"#40576a";border.width:Qt.colorEqual(root.selectedColor,modelData)?2:1}
+                    background:Rectangle {radius:9;color:modelData;border.color:activeFocus?settings_form.accentColor:Qt.colorEqual(root.selectedColor,modelData)?settings_form.primaryText:"#40576a";border.width:Qt.colorEqual(root.selectedColor,modelData)?2:1}
                 }
             }
         }
