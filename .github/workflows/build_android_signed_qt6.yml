@@ -16,6 +16,7 @@ defaults:
     shell: bash
 
 env:
+  OPENHD_SNAPSHOT_NUMBER: ${{ github.ref_name == 'snapshots' && github.run_number || '' }}
   SOURCE_DIR: ${{ github.workspace }}
   QT_VERSION: 6.6.3
   BUILD_TYPE: Release
@@ -82,6 +83,11 @@ jobs:
         run: |
           cd lib/gstreamer_prebuilts/
           ./fetch_extract_locally.sh
+
+      - name: Stamp snapshot APK version
+        if: env.OPENHD_SNAPSHOT_NUMBER != ''
+        run: |
+          sed -i -E "s/android:versionName=\"[^\"]*\"/android:versionName=\"0.0.$OPENHD_SNAPSHOT_NUMBER\"/; s/android:versionCode=\"[^\"]*\"/android:versionCode=\"$((10000 + OPENHD_SNAPSHOT_NUMBER))\"/" androidqt6/AndroidManifest.xml
 
       - name: Configure (CMake for Android Qt6)
         working-directory: ${{ runner.temp }}/shadow_build_dir

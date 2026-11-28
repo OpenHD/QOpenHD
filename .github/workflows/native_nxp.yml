@@ -1,8 +1,11 @@
 name: Native NXP video checks
 on:
   push:
-    branches: [dev-release]
+    branches: [snapshots]
   pull_request:
+env:
+  OPENHD_SNAPSHOT_NUMBER: ${{ github.ref_name == 'snapshots' && github.run_number || '' }}
+
 jobs:
   parser-and-packaging:
     runs-on: ubuntu-22.04

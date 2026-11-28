@@ -4,11 +4,12 @@ on:
   push:
    branches:
       - "2.7-evo"
-      - "dev-release"
-      - "release"
+      - "snapshots"
+      - "master"
       - "openhd-3.0"
 
 env:
+  OPENHD_SNAPSHOT_NUMBER: ${{ github.ref_name == 'snapshots' && github.run_number || '' }}
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
 
@@ -59,7 +60,7 @@ jobs:
       #     command: "push"
       #     format: "deb"
       #     owner: "openhd"
-      #     repo: ${{ github.ref_name }}
+      #     repo: ${{ github.ref_name == 'snapshots' && 'dev-release' || github.ref_name == 'master' && 'release' || github.ref_name }}
       #     distro: "ubuntu"
       #     release: "noble"
       #     republish: "true" # needed ONLY if version is not changing
@@ -67,7 +68,7 @@ jobs:
       #   if: ${{ github.ref != 'refs/heads/2.5-evo' }}
 
       - name: Push
-        if: github.ref_name == 'release' || github.ref_name == 'dev-release'
+        if: github.ref_name == 'master' || github.ref_name == 'snapshots'
         run: |
           ls -a
-          cloudsmith push deb  -k ${{ secrets.CLOUDSMITH_API_KEY }} openhd/${{ github.ref_name }}/ubuntu/noble *.deb
+          cloudsmith push deb  -k ${{ secrets.CLOUDSMITH_API_KEY }} openhd/${{ github.ref_name == 'snapshots' && 'dev-release' || github.ref_name == 'master' && 'release' || github.ref_name }}/ubuntu/noble *.deb

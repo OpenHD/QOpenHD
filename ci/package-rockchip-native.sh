@@ -7,6 +7,11 @@ case "$release" in bullseye|bookworm) ;; *) exit 2 ;; esac
 : "${PREBUILT_QOPENHD:?}" "${PREBUILT_BOOT_SPLASH:?}" "${PREBUILT_EGL_COMPAT:?}"
 revision=$(git -C "$repo" rev-parse --short=8 HEAD)
 version=${QOPENHD_PACKAGE_VERSION:-3.0-alpha-$(date -u +%Y%m%d%H%M)-$revision}
+debian_version=$version
+if [[ ${OPENHD_SNAPSHOT_NUMBER:-} =~ ^[1-9][0-9]*$ ]]; then
+    version="0.0.$OPENHD_SNAPSHOT_NUMBER"
+    debian_version="1:$version"
+fi
 output=${QOPENHD_PACKAGE_DIR:-$repo}
 mkdir -p "$output"
 stage=$(mktemp -d /tmp/qopenhd-rockchip-package.XXXXXXXX)
@@ -45,7 +50,7 @@ for family in rk3566 rk3588; do
     other=rk3588; [[ "$family" == rk3588 ]] && other=rk3566
     cat > "$stage/DEBIAN/control" <<EOF
 Package: qopenhd-native-$family
-Version: $version
+Version: $debian_version
 Architecture: arm64
 Maintainer: OpenHD <contact@openhd.org>
 Depends: $dependencies

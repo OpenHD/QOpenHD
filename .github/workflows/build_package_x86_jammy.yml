@@ -4,11 +4,12 @@ on:
   push:
    branches:
       - "2.7-evo"
-      - "dev-release"
-      - "release"
+      - "snapshots"
+      - "master"
       - "openhd-3.0"
 
 env:
+  OPENHD_SNAPSHOT_NUMBER: ${{ github.ref_name == 'snapshots' && github.run_number || '' }}
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
 
@@ -39,18 +40,18 @@ jobs:
 
     - name: Build with make
       run: |
-        sudo ./package.sh regular x86_64 ubuntu jammy
+        sudo --preserve-env=OPENHD_SNAPSHOT_NUMBER ./package.sh regular x86_64 ubuntu jammy
     
     - name: Push
       id: push
-      if: github.ref_name == 'release' || github.ref_name == 'dev-release'
+      if: github.ref_name == 'master' || github.ref_name == 'snapshots'
       uses: cloudsmith-io/action@master
       with:
         api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
         command: "push"
         format: "deb"
         owner: "openhd"
-        repo: ${{ github.ref_name }}
+        repo: ${{ github.ref_name == 'snapshots' && 'dev-release' || github.ref_name == 'master' && 'release' || github.ref_name }}
         distro: "ubuntu"
         release: "jammy"
         republish: "true" # needed ONLY if version is not changing

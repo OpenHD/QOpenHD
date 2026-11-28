@@ -104,6 +104,12 @@ fi
 
 VERSION="3.0-alpha-$(date -d '+1 hour' +'%m-%d-%Y--%H-%M-%S')-${VER2}"
 
+PACKAGE_EPOCH=()
+if [[ ${OPENHD_SNAPSHOT_NUMBER:-} =~ ^[1-9][0-9]*$ ]]; then
+    VERSION="0.0.${OPENHD_SNAPSHOT_NUMBER}"
+    PACKAGE_EPOCH=(--epoch 1)
+fi
+
 ls -a ${TMPDIR}/usr/local/bin
 echo "going into packaging stage"
 
@@ -111,14 +117,14 @@ rm ${PACKAGE_NAME}_${VERSION}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
 if [[ "${PACKAGE_ARCH}" = "armhf" ]] || \
    [[ "${PACKAGE_ARCH}" = "arm64" && "${OS}" = "raspbian" ]]; then
     echo "raspberry pi"
-    fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION} -C ${TMPDIR} \
+    fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v "${VERSION}" "${PACKAGE_EPOCH[@]}" -C ${TMPDIR} \
     -p qopenhd_VERSION_ARCH.deb \
     -d espeak-ng -d gstreamer1.0-plugins-base -d gstreamer1.0-alsa \
     --after-install after-install.sh \
     ${PLATFORM_PACKAGES} || exit 1
 elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
     echo "rockchip"
-    fpm -a ${PACKAGE_ARCH} -s dir -t deb -n qopenhd_rk3566 -v ${VERSION} -C ${TMPDIR} \
+    fpm -a ${PACKAGE_ARCH} -s dir -t deb -n qopenhd_rk3566 -v "${VERSION}" "${PACKAGE_EPOCH[@]}" -C ${TMPDIR} \
     -p qopenhd_rk3566_VERSION_ARCH.deb \
     --after-install after-install.sh \
     ${PLATFORM_PACKAGES} || exit 1
@@ -127,7 +133,7 @@ elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
     rm /tmp/qopenhd/etc/systemd/system/qopenhd.service
     cp systemd/rock5_qopenhd.service /tmp/qopenhd/etc/systemd/system/qopenhd.service
 
-    fpm -a ${PACKAGE_ARCH} -s dir -t deb -n qopenhd_rk3588 -v ${VERSION} -C ${TMPDIR} \
+    fpm -a ${PACKAGE_ARCH} -s dir -t deb -n qopenhd_rk3588 -v "${VERSION}" "${PACKAGE_EPOCH[@]}" -C ${TMPDIR} \
     -p qopenhd_rk3588_VERSION_ARCH.deb \
     --after-install after-install.sh \
     ${PLATFORM_PACKAGES} || exit 1
@@ -135,14 +141,14 @@ elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
     rm /tmp/qopenhd/etc/systemd/system/qopenhd.service
     cp systemd/rock5_qopenhd.service /tmp/qopenhd/etc/systemd/system/qopenhd.service
 
-    fpm -a ${PACKAGE_ARCH} -s dir -t deb -n qopenhd_rk3588a -v ${VERSION} -C ${TMPDIR} \
+    fpm -a ${PACKAGE_ARCH} -s dir -t deb -n qopenhd_rk3588a -v "${VERSION}" "${PACKAGE_EPOCH[@]}" -C ${TMPDIR} \
     -p qopenhd_rk3588a_VERSION_ARCH.deb \
     --after-install after-install.sh \
     ${PLATFORM_PACKAGES} || exit 1
 else
     echo "everything else"
 
-    fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION} -C ${TMPDIR} \
+    fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v "${VERSION}" "${PACKAGE_EPOCH[@]}" -C ${TMPDIR} \
     -p qopenhd_VERSION_ARCH.deb \
     --after-install after-install.sh \
     ${PLATFORM_PACKAGES} || exit 1

@@ -16,6 +16,9 @@ on:
 permissions:
   contents: read
 
+env:
+  OPENHD_SNAPSHOT_NUMBER: ${{ github.ref_name == 'snapshots' && github.run_number || '' }}
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -84,11 +87,11 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
       - name: Publish packages
-        if: inputs.publish && (github.ref_name == 'release' || github.ref_name == 'dev-release')
+        if: inputs.publish && (github.ref_name == 'master' || github.ref_name == 'snapshots')
         env:
           CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
           CROSS_TARGET: ${{ inputs.target }}
-          PACKAGE_REPO: ${{ github.ref_name }}
+          PACKAGE_REPO: ${{ github.ref_name == 'snapshots' && 'dev-release' || github.ref_name == 'master' && 'release' || github.ref_name }}
         run: |
           python3 -m pip install cloudsmith-cli
           case "$CROSS_TARGET" in

@@ -1,4 +1,6 @@
 # We show the version (optained from git) in the GUI for development
+SNAPSHOT_NUMBER = $$(OPENHD_SNAPSHOT_NUMBER)
+!isEmpty(SNAPSHOT_NUMBER): QOPENHD_GIT_VERSION = 0.0.$${SNAPSHOT_NUMBER}
 isEmpty(QOPENHD_GIT_VERSION): QOPENHD_GIT_VERSION = $$system(git describe --always --tags --abbrev=0 --dirty)
 
 # We show the commit hash in the GUI for development

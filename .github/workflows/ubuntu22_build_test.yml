@@ -7,11 +7,12 @@ name: ubuntu22_build_test
 on:
   push:
     branches-ignore:
-      - release
-      - dev-release
+      - master
+      - snapshots
       - 2.7-evo
 
 env:
+  OPENHD_SNAPSHOT_NUMBER: ${{ github.ref_name == 'snapshots' && github.run_number || '' }}
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
 

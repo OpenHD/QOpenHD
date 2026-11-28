@@ -4,8 +4,8 @@ on:
   push:
    branches:
       - "2.7-evo"
-      - "dev-release"
-      - "release"
+      - "snapshots"
+      - "master"
    paths-ignore:
       - '**.md'
       - '**.asciidoc'
@@ -18,6 +18,7 @@ defaults:
     shell: bash
 
 env:
+  OPENHD_SNAPSHOT_NUMBER: ${{ github.ref_name == 'snapshots' && github.run_number || '' }}
   SOURCE_DIR:   ${{ github.workspace }}
   QT_VERSION:   5.15.2
   BUILD_TYPE:   ${{ (github.ref_type == 'tag' || contains(github.ref, 'Stable_')) && 'StableBuild' || 'DailyBuild' }}
@@ -99,6 +100,11 @@ jobs:
         run: |
           cd lib/gstreamer_prebuilts/
           ./fetch_extract_locally.sh
+
+      - name: Stamp snapshot APK version
+        if: env.OPENHD_SNAPSHOT_NUMBER != ''
+        run: |
+          sed -i -E "s/android:versionName=\"[^\"]*\"/android:versionName=\"0.0.$OPENHD_SNAPSHOT_NUMBER\"/; s/android:versionCode=\"[^\"]*\"/android:versionCode=\"$((10000 + OPENHD_SNAPSHOT_NUMBER))\"/" android/AndroidManifest.xml
 
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir

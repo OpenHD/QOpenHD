@@ -6,6 +6,9 @@ on:
 permissions:
   contents: read
 
+env:
+  OPENHD_SNAPSHOT_NUMBER: ${{ github.ref_name == 'snapshots' && github.run_number || '' }}
+
 jobs:
   build:
     uses: ./.github/workflows/cross_package.yml
