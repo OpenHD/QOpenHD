@@ -7,7 +7,7 @@ name: ubuntu22_build_test
 on:
   push:
     branches-ignore:
-      - release
+      - master
       - dev-release
       - 2.6-evo
 
