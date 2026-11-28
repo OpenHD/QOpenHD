@@ -1,5 +1,8 @@
 <artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters>
+    <parameter name="version" required="true"/>
+  </parameters>
   <zip-file>
-    <pe-file path="QOpenHD-Windows-Installer.exe" product-name="QOpenHD"><authenticode-sign/></pe-file>
+    <pe-file path="QOpenHD-Windows-Installer.exe" product-name="QOpenHD" product-version="${version}"><authenticode-sign/></pe-file>
   </zip-file>
 </artifact-configuration>
